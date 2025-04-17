@@ -1,17 +1,17 @@
 sap.ui.define([
-	"com/infocus/salesApplication/controller/BaseController",
+	"com/infocus/purchaseApplication/controller/BaseController",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/viz/ui5/api/env/Format",
-	"com/infocus/salesApplication/libs/html2pdf.bundle",
+	"com/infocus/purchaseApplication/libs/html2pdf.bundle",
 	"jquery.sap.global"
 ], function(BaseController, Fragment, Filter, FilterOperator, JSONModel, MessageBox, Format, html2pdf_bundle, jQuery) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.salesApplication.controller.Home", {
+	return BaseController.extend("com.infocus.purchaseApplication.controller.Home", {
 
 		/*************** on Load Functions *****************/
 		onInit: function() {
@@ -143,7 +143,7 @@ sap.ui.define([
 			if (!this._oCustomerMasterDialog) {
 				Fragment.load({
 					id: that.getView().getId(),
-					name: "com.infocus.salesApplication.view.dialogComponent.DialogCustomerMaster",
+					name: "com.infocus.purchaseApplication.view.dialogComponent.DialogCustomerMaster",
 					controller: that
 				}).then(function(oDialog) {
 					that._oCustomerMasterDialog = oDialog;
@@ -160,7 +160,7 @@ sap.ui.define([
 			this._financialYearInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogFiscalYear) {
-				this.oOpenDialogFiscalYear = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogFiscalYear", this);
+				this.oOpenDialogFiscalYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogFiscalYear", this);
 				this.getView().addDependent(this.oOpenDialogFiscalYear);
 			}
 			this.oOpenDialogFiscalYear.open();
@@ -169,7 +169,7 @@ sap.ui.define([
 			this._quarterInputId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogQuarter) {
-				this.oOpenDialogQuarter = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogQuarter", this);
+				this.oOpenDialogQuarter = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarter", this);
 				this.getView().addDependent(this.oOpenDialogQuarter);
 			}
 			this.oOpenDialogQuarter.open();
@@ -178,7 +178,7 @@ sap.ui.define([
 			this._quarterInputYearId = oEvent.getSource().getId();
 			// open fragment
 			if (!this.oOpenDialogQuarterYear) {
-				this.oOpenDialogQuarterYear = sap.ui.xmlfragment("com.infocus.salesApplication.view.dialogComponent.DialogQuarterYear", this);
+				this.oOpenDialogQuarterYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarterYear", this);
 				this.getView().addDependent(this.oOpenDialogQuarterYear);
 			}
 			this.oOpenDialogQuarterYear.open();

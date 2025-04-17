@@ -1,11 +1,11 @@
 sap.ui.define([
-	"com/infocus/salesApplication/controller/BaseController",
+	"com/infocus/purchaseApplication/controller/BaseController",
 	"sap/m/MessageBox",
 	"sap/ui/core/BusyIndicator"
 ], function(BaseController, MessageBox, BusyIndicator) {
 	"use strict";
 
-	return BaseController.extend("com.infocus.salesApplication.controller.App", {
+	return BaseController.extend("com.infocus.purchaseApplication.controller.App", {
 
 		onInit: function() {
 		    console.log("App Controller onInit called");

@@ -1,7 +1,7 @@
 {
 	"_version": "1.7.0",
 	"sap.app": {
-		"id": "com.infocus.salesApplication",
+		"id": "com.infocus.purchaseApplication",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
@@ -78,7 +78,7 @@
 	},
 	"sap.ui5": {
 		"rootView": {
-			"viewName": "com.infocus.salesApplication.view.App",
+			"viewName": "com.infocus.purchaseApplication.view.App",
 			"type": "XML"
 		},
 		"dependencies": {
@@ -102,7 +102,7 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "com.infocus.salesApplication.i18n.i18n"
+					"bundleName": "com.infocus.purchaseApplication.i18n.i18n"
 				}
 			},
 			"top10CustomerModel": {
@@ -178,7 +178,7 @@
 				"routerClass": "sap.m.routing.Router",
 				"viewType": "XML",
 				"async": true,
-				"viewPath": "com.infocus.salesApplication.view",
+				"viewPath": "com.infocus.purchaseApplication.view",
 				"controlId": "app",
 				"controlAggregation": "pages",
 				"clearAggregation": false

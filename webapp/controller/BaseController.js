@@ -3,7 +3,7 @@ sap.ui.define([
      
     ],function(Controller){
         "use strict";
-        return Controller.extend("com.infocus.salesApplication.controller.BaseController",{
+        return Controller.extend("com.infocus.purchaseApplication.controller.BaseController",{
             
             /**
 			 * Convenience method for accessing the router.
