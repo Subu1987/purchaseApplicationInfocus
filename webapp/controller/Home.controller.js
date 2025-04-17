@@ -29,7 +29,7 @@ sap.ui.define([
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
 			if (oGlobalDataModel) {
-				oGlobalDataModel.setProperty("/selectedTabText", "All Customer Turnover");
+				oGlobalDataModel.setProperty("/selectedTabText", "All Supplier Turnover");
 				oGlobalDataModel.setProperty("/isChartFragment1Visible", true);
 				oGlobalDataModel.setProperty("/isChartFragment2Visible", false);
 				oGlobalDataModel.setProperty("/isChartFragment3Visible", true);
@@ -59,7 +59,7 @@ sap.ui.define([
 			};
 
 			var getInputIdsToValidate = function() {
-				var isSingleCustomer = oSelectedTabText === "Single Customer Turnover";
+				var isSingleCustomer = oSelectedTabText === "Single Supplier Turnover";
 
 				if (isSingleCustomer) {
 					return oSelectedIndex === 0 ? ["_customerInputId", "_financialYearInputId"] : ["_customerInputId", "_quarterInputId",
@@ -474,14 +474,14 @@ sap.ui.define([
 
 			// Define the mapping of keys to text values
 			var oTextMapping = {
-				"scenario1": "All Customer Turnover",
-				"scenario2": "Top 10 Customer Turnover",
-				"scenario3": "Single Customer Turnover",
-				"scenario4": "Turnover"
+				"scenario1": "All Supplier Turnover",
+				"scenario2": "Top 5 Supplier Turnover",
+				"scenario3": "Single Supplier Turnover",
+				"scenario4": "Purchase Turnover"
 			};
 
 			// visible non-visible on customer box
-			if (oTextMapping[sSelectedKey] === "Single Customer Turnover") {
+			if (oTextMapping[sSelectedKey] === "Single Supplier Turnover") {
 				oCustomerMasterBox.setVisible(true);
 			} else {
 				oCustomerMasterBox.setVisible(false);
@@ -516,13 +516,13 @@ sap.ui.define([
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
 			var oSelectedTabText = oGlobalData.selectedTabText;
 
-			if (oSelectedTabText === "All Customer Turnover") {
+			if (oSelectedTabText === "All Supplier Turnover") {
 				this.getAllCustomerData();
 
-			} else if (oSelectedTabText === "Top 10 Customer Turnover") {
+			} else if (oSelectedTabText === "Top 5 Supplier Turnover") {
 				this.getTop10CustomerData();
 
-			} else if (oSelectedTabText === "Single Customer Turnover") {
+			} else if (oSelectedTabText === "Single Supplier Turnover") {
 				this.getSingleCustomerData();
 
 			} else {
@@ -574,7 +574,7 @@ sap.ui.define([
 			}
 
 			// Add customer filter (for both tabs)
-			if (oSelectedTabText === "Single Customer Turnover" && aSelectedCustomerMasterData.length > 0) {
+			if (oSelectedTabText === "Single Supplier Turnover" && aSelectedCustomerMasterData.length > 0) {
 				filters.push(new Filter({
 					filters: aSelectedCustomerMasterData.map(function(cust) {
 						return new Filter("customer", FilterOperator.EQ, cust);
@@ -847,7 +847,7 @@ sap.ui.define([
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
 			oData.forEach(item => {
 				this.convertTurnoverToCrore(item);
-				if (oSelectedTabText !== "Turnover") {
+				if (oSelectedTabText !== "Purchase Turnover") {
 					this.generateCustomerNameShort(item);
 				}
 
@@ -963,7 +963,7 @@ sap.ui.define([
 			let uniqueKeys = [];
 
 			// Choose key format based on selected tab
-			if (selectedTabText === "Turnover") {
+			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => item.fiscalYear))];
 			} else {
 				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.fiscalYear})`))];
@@ -995,7 +995,7 @@ sap.ui.define([
 
 			var rules = [];
 
-			if (oSelectedTabText === "Turnover") {
+			if (oSelectedTabText === "Purchase Turnover") {
 				rules = oData.map(item => ({
 					dataContext: {
 						"Fiscal Year": item.fiscalYear
@@ -1047,7 +1047,7 @@ sap.ui.define([
 			var colorMap = {};
 			var uniqueKeys = [];
 
-			if (selectedTabText === "Turnover") {
+			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
 			} else {
 				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.quater} ${item.quaterYear})`))];
@@ -1076,7 +1076,7 @@ sap.ui.define([
 			var colorMap = result.colorMap;
 			var rules = [];
 
-			if (oSelectedTabText === "Turnover") {
+			if (oSelectedTabText === "Purchase Turnover") {
 				rules = oData.map(function(item) {
 					var key = `(${item.quater} ${item.quaterYear})`;
 					return {

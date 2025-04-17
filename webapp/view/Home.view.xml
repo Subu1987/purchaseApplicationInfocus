@@ -62,7 +62,7 @@
 					<IconTabBar id="iconTabBar" selectedKey="scenario1" select="onTabSelect" stretchContentHeight="true" class="beautifulTabBar">
 						<items>
 							<!-- Scenario 1 -->
-							<IconTabFilter key="scenario1" text="All Customer Turnover" icon="sap-icon://group" tooltip="All Customer Turnover"
+							<IconTabFilter key="scenario1" text="All Supplier Turnover" icon="sap-icon://group" tooltip="All Supplier Turnover"
 								iconColor="Positive" design="Horizontal">
 								<content>
 									<VBox visible="{globalData>/isChartFragment1Visible}">
@@ -75,7 +75,7 @@
 							</IconTabFilter>
 							<!-- Scenario 2 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario2" text="Top 10 Customer Turnover" icon="sap-icon://customer" tooltip="Top 10 Customer Turnover"
+							<IconTabFilter key="scenario2" text="Top 5 Supplier Turnover" icon="sap-icon://customer" tooltip="Top 5 Supplier Turnover"
 								design="Horizontal">
 								<content>
 									
@@ -89,8 +89,8 @@
 							</IconTabFilter>
 							<!-- Scenario 3 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario3" text="Single Customer Turnover" icon="sap-icon://employee-lookup"
-								tooltip="Single Customer Turnover" iconColor="Critical" design="Horizontal">
+							<IconTabFilter key="scenario3" text="Single Supplier Turnover" icon="sap-icon://employee-lookup"
+								tooltip="Single Supplier Turnover" iconColor="Critical" design="Horizontal">
 								<content>
 									
 									<VBox visible="{globalData>/isChartFragment5Visible}">
@@ -103,8 +103,8 @@
 							</IconTabFilter>
 							<!-- Scenario 4 -->
 							<IconTabSeparator/>
-							<IconTabFilter key="scenario4" text="Turnover" icon="sap-icon://customer-financial-fact-sheet"
-								tooltip="Turnover" iconColor="Negative" design="Horizontal">
+							<IconTabFilter key="scenario4" text="Purchase Turnover" icon="sap-icon://customer-financial-fact-sheet"
+								tooltip="Purchase Turnover" iconColor="Negative" design="Horizontal">
 								<content>
 									
 									<VBox visible="{globalData>/isChartFragment7Visible}">
