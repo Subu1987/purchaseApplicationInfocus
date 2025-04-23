@@ -24,7 +24,7 @@ sap.ui.define([
 
 		},
 		_initializeAppData: function() {
-			this.getCustomerMasterParametersData();
+			this.getSupplierMasterParametersData();
 		},
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
@@ -52,7 +52,7 @@ sap.ui.define([
 
 			// Map input IDs to friendly field names
 			var mFieldNames = {
-				"_customerInputId": "Customer",
+				"_supplierInputId": "Supplier",
 				"_financialYearInputId": "Fiscal Year",
 				"_quarterInputId": "Quarter",
 				"_quarterInputYearId": "Quarter Year"
@@ -62,7 +62,7 @@ sap.ui.define([
 				var isSingleCustomer = oSelectedTabText === "Single Supplier Turnover";
 
 				if (isSingleCustomer) {
-					return oSelectedIndex === 0 ? ["_customerInputId", "_financialYearInputId"] : ["_customerInputId", "_quarterInputId",
+					return oSelectedIndex === 0 ? ["_supplierInputId", "_financialYearInputId"] : ["_supplierInputId", "_quarterInputId",
 						"_quarterInputYearId"
 					];
 				} else {
@@ -101,13 +101,13 @@ sap.ui.define([
 		},
 
 		/*************** get parameters data *****************/
-		getCustomerMasterParametersData: function() {
+		getSupplierMasterParametersData: function() {
 			var that = this;
-			var oCustomerMasterModel = this.getOwnerComponent().getModel("customerMasterModel");
-			var pUrl = "/ZCUST_MASTER";
+			var oModel = this.getOwnerComponent().getModel();
+			var pUrl = "/SUPP_MasterSet";
 
 			sap.ui.core.BusyIndicator.show();
-			oCustomerMasterModel.read(pUrl, {
+			oModel.read(pUrl,{
 				success: function(response) {
 					var pData = response.results;
 					console.log(pData);
@@ -120,8 +120,8 @@ sap.ui.define([
 					sap.ui.core.BusyIndicator.hide();
 
 					// set the Customer data 
-					var oCustomerMasterData = that.getOwnerComponent().getModel("customerMasterData");
-					oCustomerMasterData.setData(pData);
+					var oSupplierMasterData = that.getOwnerComponent().getModel("supplierMasterData");
+					oSupplierMasterData.setData(pData);
 
 				},
 				error: function(error) {
@@ -136,24 +136,24 @@ sap.ui.define([
 
 		/*************** set the inputId & create the fragment *****************/
 
-		handleValueCustomerMaster: function(oEvent) {
-			this._customerInputId = oEvent.getSource().getId();
+		handleValueSupplierMaster: function(oEvent) {
+			this._supplierInputId = oEvent.getSource().getId();
 			var that = this;
 
-			if (!this._oCustomerMasterDialog) {
+			if (!this._oSupplierMasterDialog) {
 				Fragment.load({
 					id: that.getView().getId(),
-					name: "com.infocus.purchaseApplication.view.dialogComponent.DialogCustomerMaster",
+					name: "com.infocus.purchaseApplication.view.dialogComponent.DialogSupplierMaster",
 					controller: that
 				}).then(function(oDialog) {
-					that._oCustomerMasterDialog = oDialog;
+					that._oSupplierMasterDialog = oDialog;
 					that.getView().addDependent(oDialog);
 					oDialog.open();
 				}).catch(function(oError) {
-					console.error("Error loading Customer Master Dialog:", oError);
+					console.error("Error loading Supplier Master Dialog:", oError);
 				});
 			} else {
-				this._oCustomerMasterDialog.open();
+				this._oSupplierMasterDialog.open();
 			}
 		},
 		handleValueFiscalYear: function(oEvent) {
@@ -186,9 +186,9 @@ sap.ui.define([
 
 		/*************** search value within fragment *****************/
 
-		onSearchCustomerMaster: function(oEvent) {
+		onSearchSupplierMaster: function(oEvent) {
 			var sQuery = oEvent.getParameter("newValue");
-			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
+			var oList = Fragment.byId(this.getView().getId(), "idSupplierMasterList");
 			if (!oList) return;
 
 			var oBinding = oList.getBinding("items");
@@ -196,8 +196,8 @@ sap.ui.define([
 
 			var aFilters = [];
 			if (sQuery) {
-				var oFilter1 = new sap.ui.model.Filter("Customer", sap.ui.model.FilterOperator.Contains, sQuery);
-				var oFilter2 = new sap.ui.model.Filter("Name", sap.ui.model.FilterOperator.Contains, sQuery);
+				var oFilter1 = new sap.ui.model.Filter("lifnr", sap.ui.model.FilterOperator.Contains, sQuery);
+				var oFilter2 = new sap.ui.model.Filter("name1", sap.ui.model.FilterOperator.Contains, sQuery);
 				aFilters.push(new sap.ui.model.Filter({
 					filters: [oFilter1, oFilter2],
 					and: false
@@ -237,11 +237,11 @@ sap.ui.define([
 
 		/*************** set the each property to globalData & reflect data in input field  *****************/
 
-		onSelectionChangeCustomerMaster: function(oEvent) {
+		onSelectionChangeSupplierMaster: function(oEvent) {
 			var oList = oEvent.getSource();
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
-			var aSelectedCustomerIDs = oGlobalModel.getProperty("/selectedCustomerIDs") || [];
-			var aSelectedCustomerNames = oGlobalModel.getProperty("/selectedCustomerNames") || [];
+			var aSelectedSupplierIDs = oGlobalModel.getProperty("/selectedSupplierIDs") || [];
+			var aSelectedSupplierNames = oGlobalModel.getProperty("/selectedSupplierNames") || [];
 
 			var aAllItems = oList.getItems();
 			aAllItems.forEach(function(oItem) {
@@ -250,31 +250,31 @@ sap.ui.define([
 
 				// If item is selected
 				if (oItem.getSelected()) {
-					if (!aSelectedCustomerIDs.includes(sID)) {
-						aSelectedCustomerIDs.push(sID);
-						aSelectedCustomerNames.push(sName);
+					if (!aSelectedSupplierIDs.includes(sID)) {
+						aSelectedSupplierIDs.push(sID);
+						aSelectedSupplierNames.push(sName);
 					}
 				} else {
 					// If item is unselected
-					var index = aSelectedCustomerIDs.indexOf(sID);
+					var index = aSelectedSupplierIDs.indexOf(sID);
 					if (index !== -1) {
-						aSelectedCustomerIDs.splice(index, 1);
-						aSelectedCustomerNames.splice(index, 1);
+						aSelectedSupplierIDs.splice(index, 1);
+						aSelectedSupplierNames.splice(index, 1);
 					}
 				}
 			});
 
-			oGlobalModel.setProperty("/selectedCustomerNames", aSelectedCustomerNames);
-			oGlobalModel.setProperty("/selectedCustomerIDs", aSelectedCustomerIDs);
-			oGlobalModel.setProperty("/selectedCustomerNamesDisplay", aSelectedCustomerNames.join(", "));
+			oGlobalModel.setProperty("/selectedSupplierNames", aSelectedSupplierNames);
+			oGlobalModel.setProperty("/selectedSupplierIDs", aSelectedSupplierIDs);
+			oGlobalModel.setProperty("/selectedSupplierNamesDisplay", aSelectedSupplierNames.join(", "));
 		},
-		onConfirmCustomerMaster: function() {
+		onConfirmSupplierMaster: function() {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 
 			// Values are already being maintained correctly in the model
-			var aSelectedNamesDisplay = oGlobalModel.getProperty("/selectedCustomerNamesDisplay") || "";
-			var aSelectedNames = oGlobalModel.getProperty("/selectedCustomerNames") || [];
-			var aSelectedIDs = oGlobalModel.getProperty("/selectedCustomerIDs") || [];
+			var aSelectedNamesDisplay = oGlobalModel.getProperty("/selectedSupplierNamesDisplay") || "";
+			var aSelectedNames = oGlobalModel.getProperty("/selectedSupplierNames") || [];
+			var aSelectedIDs = oGlobalModel.getProperty("/selectedSupplierIDs") || [];
 
 			// You can now directly use these for any processing or display
 			console.log("Confirmed selected IDs:", aSelectedIDs);
@@ -283,29 +283,29 @@ sap.ui.define([
 
 			oGlobalModel.refresh(true);
 
-			this._resetCustomerMasterDialog();
-			this._oCustomerMasterDialog.close();
+			this._resetSupplierMasterDialog();
+			this._oSupplierMasterDialog.close();
 		},
-		onCloseCustomerMaster: function() {
+		onCloseSupplierMaster: function() {
 			// Clear global model selections
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
-			oGlobalModel.setProperty("/selectedCustomerIDs", []);
-			oGlobalModel.setProperty("/selectedCustomerNames", []);
-			oGlobalModel.setProperty("/selectedCustomerNamesDisplay", "");
+			oGlobalModel.setProperty("/selectedSupplierIDs", []);
+			oGlobalModel.setProperty("/selectedSupplierNames", []);
+			oGlobalModel.setProperty("/selectedSupplierNamesDisplay", "");
 
-			this._resetCustomerMasterDialog();
-			this._oCustomerMasterDialog.close();
+			this._resetSupplierMasterDialog();
+			this._oSupplierMasterDialog.close();
 		},
-		_resetCustomerMasterDialog: function() {
-			var oList = Fragment.byId(this.getView().getId(), "idCustomerMasterList");
-			var oSearchField = Fragment.byId(this.getView().getId(), "idCustomerSearchField");
+		_resetSupplierMasterDialog: function() {
+			var oList = Fragment.byId(this.getView().getId(), "idSupplierMasterList");
+			var oSearchField = Fragment.byId(this.getView().getId(), "idSupplierSearchField");
 
 			// Clear Search
 			if (oSearchField) {
 				oSearchField.setValue("");
 
 				// Manually trigger the liveChange event handler with empty value
-				this.onSearchCustomerMaster({
+				this.onSearchSupplierMaster({
 					getParameter: function() {
 						return "";
 					}
@@ -400,13 +400,13 @@ sap.ui.define([
 
 		/*************** Clear the input value in livechange event  *****************/
 
-		onCustomerInputLiveChange: function(oEvent) {
+		onSupplierInputLiveChange: function(oEvent) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 			var sValue = oEvent.getParameter("value");
 			if (!sValue) {
-				oGlobalModel.setProperty("/selectedCustomerNames", []);
-				oGlobalModel.setProperty("/selectedCustomerIDs", []);
-				oGlobalModel.setProperty("/selectedCustomerNamesDisplay", "");
+				oGlobalModel.setProperty("/selectedSupplierNames", []);
+				oGlobalModel.setProperty("/selectedSupplierIDs", []);
+				oGlobalModel.setProperty("/selectedSupplierNamesDisplay", "");
 			}
 		},
 		onFiscalYearInputLiveChange: function(oEvent) {
@@ -505,7 +505,6 @@ sap.ui.define([
 			}
 			return false; // Return false for null, undefined, or empty values
 		},
-
 		getBackendData: function() {
 
 			if (!this.validateInputs()) {
@@ -520,7 +519,7 @@ sap.ui.define([
 				this.getAllCustomerData();
 
 			} else if (oSelectedTabText === "Top 5 Supplier Turnover") {
-				this.getTop10CustomerData();
+				this.getTop5CustomerData();
 
 			} else if (oSelectedTabText === "Single Supplier Turnover") {
 				this.getSingleCustomerData();
@@ -573,11 +572,11 @@ sap.ui.define([
 				}
 			}
 
-			// Add customer filter (for both tabs)
+			// Add supplier filter (for both tabs)
 			if (oSelectedTabText === "Single Supplier Turnover" && aSelectedCustomerMasterData.length > 0) {
 				filters.push(new Filter({
 					filters: aSelectedCustomerMasterData.map(function(cust) {
-						return new Filter("customer", FilterOperator.EQ, cust);
+						return new Filter("supplier", FilterOperator.EQ, cust);
 					}),
 					and: false
 				}));
@@ -590,7 +589,7 @@ sap.ui.define([
 
 			// Retrieve models once to avoid redundant calls
 			var oComponent = this.getOwnerComponent();
-			var oAllCustomerModel = oComponent.getModel("allCustomerModel");
+			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
 			var oAllCustListDataModel = oComponent.getModel("allCustlistData");
@@ -603,7 +602,7 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oAllCustomerModel.read("/CUSTSet", {
+			oModel.read("/SUPPSet", {
 				urlParameters: {
 					"sap-client": "300"
 				},
@@ -649,12 +648,12 @@ sap.ui.define([
 				}
 			});
 		},
-		getTop10CustomerData: function() {
+		getTop5CustomerData: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
 			var oComponent = this.getOwnerComponent();
-			var oTop10CustomerModel = oComponent.getModel("top10CustomerModel");
+			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
 			var oTop10CustListDataModel = oComponent.getModel("top10listData");
@@ -667,7 +666,7 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oTop10CustomerModel.read("/CUSTSet", {
+			oModel.read("/Supp_Top5Set", {
 				urlParameters: {
 					"sap-client": "300"
 				},
@@ -718,7 +717,7 @@ sap.ui.define([
 
 			// Retrieve models once to avoid redundant calls
 			var oComponent = this.getOwnerComponent();
-			var oSingleCustomerModel = oComponent.getModel("singleCustomerModel");
+			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
 			var oSingleCustListDataModel = oComponent.getModel("singleCustlistData");
@@ -731,7 +730,7 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oSingleCustomerModel.read("/CUSTSet", {
+			oModel.read("/SINGLE_SUPPSet", {
 				urlParameters: {
 					"sap-client": "300"
 				},
@@ -782,7 +781,7 @@ sap.ui.define([
 
 			// Retrieve models once to avoid redundant calls
 			var oComponent = this.getOwnerComponent();
-			var oQuarterlyTurnoverModel = oComponent.getModel("quarterlyTurnoverModel");
+			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
 			var oQuarterlyTurnoverlistDataModel = oComponent.getModel("quarterlyTurnoverlistData");
@@ -795,7 +794,7 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oQuarterlyTurnoverModel.read("/CUSTSet", {
+			oModel.read("/POSet", {
 				urlParameters: {
 					"sap-client": "300"
 				},
@@ -848,7 +847,7 @@ sap.ui.define([
 			oData.forEach(item => {
 				this.convertTurnoverToCrore(item);
 				if (oSelectedTabText !== "Purchase Turnover") {
-					this.generateCustomerNameShort(item);
+					this.generateSupplierShort(item);
 				}
 
 			});
@@ -859,15 +858,15 @@ sap.ui.define([
 				item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2);
 			}
 		},
-		generateCustomerNameShort: function(item) {
-			const words = item.customerName.split(" ");
+		generateSupplierShort: function(item) {
+			const words = item.supplier.split(" ");
 			const abbreviation = words
 				.filter(w => w.length > 2 && w[0] === w[0].toUpperCase())
 				.map(w => w[0])
 				.join("")
 				.toUpperCase();
 
-			item.CustomerNameShort = abbreviation || item.customerName;
+			item.supplierShort = abbreviation || item.supplier;
 		},
 
 		/*************** Clear data from all input fields,radio button & model make it default  *****************/
@@ -883,7 +882,7 @@ sap.ui.define([
 
 						// Clear input fields
 						const aInputIds = [
-							"_customerInputId",
+							"_supplierInputId",
 							"_financialYearInputId",
 							"_quarterInputId",
 							"_quarterInputYearId"
@@ -894,9 +893,9 @@ sap.ui.define([
 						});
 
 						// Clear the values bound to the input fields
-						oGlobalDataModel.setProperty("/selectedCustomerNamesDisplay", "");
-						oGlobalDataModel.setProperty("/selectedCustomerNames", "");
-						oGlobalDataModel.setProperty("/selectedCustomerIDs", "");
+						oGlobalDataModel.setProperty("/selectedSupplierNamesDisplay", "");
+						oGlobalDataModel.setProperty("/selectedSupplierNames", "");
+						oGlobalDataModel.setProperty("/selectedSupplierIDs", "");
 						oGlobalDataModel.setProperty("/fiscalYears", "");
 						oGlobalDataModel.setProperty("/selectedQuarters", "");
 						oGlobalDataModel.setProperty("/selectedQuarterYears", "");
@@ -966,7 +965,7 @@ sap.ui.define([
 			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => item.fiscalYear))];
 			} else {
-				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.fiscalYear})`))];
+				uniqueKeys = [...new Set(data.map(item => `${item.supplierShort} (${item.fiscalYear})`))];
 			}
 
 			// Generate HSL colors based on index
@@ -1006,14 +1005,14 @@ sap.ui.define([
 				}));
 			} else {
 				rules = oData.map(item => {
-					const customerYear = `${item.CustomerNameShort} (${item.fiscalYear})`;
+					const key = `${item.supplierShort} (${item.fiscalYear})`;
 					return {
 						dataContext: {
-							"Customer Name": item.CustomerNameShort,
+							"Supplier Name": item.supplierShort,
 							"Fiscal Year": item.fiscalYear
 						},
 						properties: {
-							color: colorMap[customerYear]
+							color: colorMap[key]
 						}
 					};
 				});
@@ -1050,7 +1049,7 @@ sap.ui.define([
 			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
 			} else {
-				uniqueKeys = [...new Set(data.map(item => `${item.CustomerNameShort} (${item.quater} ${item.quaterYear})`))];
+				uniqueKeys = [...new Set(data.map(item => `${item.supplierShort} (${item.quater} ${item.quaterYear})`))];
 			}
 
 			uniqueKeys.forEach(function(key, i) {
@@ -1091,10 +1090,10 @@ sap.ui.define([
 				});
 			} else {
 				rules = oData.map(function(item) {
-					var key = `${item.CustomerNameShort} (${item.quater} ${item.quaterYear})`;
+					var key = `${item.supplierShort} (${item.quater} ${item.quaterYear})`;
 					return {
 						dataContext: {
-							"Customer Name": item.CustomerNameShort,
+							"Supplier Name": item.supplierShort,
 							"Quarter": item.quater,
 							"Quarter Year": item.quaterYear
 						},
@@ -1108,7 +1107,7 @@ sap.ui.define([
 			oVizFrame.setVizProperties({
 				title: {
 					visible: true,
-					text: "Turnover"
+					text: "Quaterly Wise Turnover"
 				},
 				plotArea: {
 					dataPointStyle: {

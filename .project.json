@@ -45,7 +45,7 @@
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Wed, 16 Apr 2025 08:07:20 GMT",
+    "lastBuildDateTime": "Wed, 23 Apr 2025 12:01:02 GMT",
     "availableFoldersComboBox": [
       {
         "text": "localService"
@@ -153,6 +153,6 @@
   },
   "deploy": {
     "destination": "VML",
-    "name": "ZSALESOVERVIEW"
+    "name": "zPurchaseApp"
   }
 }

@@ -23,9 +23,9 @@
 					<FlexBox width="auto" id="inputBoxes" wrap="NoWrap" justifyContent="Center" alignItems="Center">
 						<HBox id="customerMasterBox" direction="Column" alignItems="Center" visible="false" class="sapUiTinyMarginBegin">
 							<!--<Label text="Customer" design="Bold"/>-->
-							<Input id="_customerInputId" type="Text" tooltip="Select from list" placeholder="Customer" class="boldText roundedInput"
-								showValueHelp="true" showClearIcon="true" value="{globalData>/selectedCustomerNamesDisplay}" valueHelpRequest="handleValueCustomerMaster"
-								liveChange="onCustomerInputLiveChange" required="true"/>
+							<Input id="_supplierInputId" type="Text" tooltip="Select from list" placeholder="Supplier" class="boldText roundedInput"
+								showValueHelp="true" showClearIcon="true" value="{globalData>/selectedSupplierNamesDisplay}" valueHelpRequest="handleValueSupplierMaster"
+								liveChange="onSupplierInputLiveChange" required="true"/>
 						</HBox>
 						<!-- Financial Year Input -->
 						<HBox id="fiscalYearBox" direction="Column" alignItems="Center" visible="true" class="sapUiTinyMarginBegin">

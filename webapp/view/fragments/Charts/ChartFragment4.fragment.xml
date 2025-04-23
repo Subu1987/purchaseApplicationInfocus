@@ -10,7 +10,7 @@
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataQuaterlyWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>CustomerNameShort}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top10listData>supplierShort}"/>
 									<vizData:DimensionDefinition name="Quarter Year" value="{top10listData>quaterYear}"/>
 									<vizData:DimensionDefinition name="Quarter" value="{top10listData>quater}"/>
 								</vizData:dimensions>
@@ -21,7 +21,7 @@
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
 						</viz:feeds>
@@ -34,9 +34,9 @@
 					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataQuaterlyWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
-								<Label text="Customer Name"/>
+								<Label text="Supplier Name"/>
 								<table:template>
-									<Text text="{top10listData>customerName}"/>
+									<Text text="{top10listData>supplier}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>

@@ -9,7 +9,7 @@ sap.ui.define([
 
 		onInit: function() {
 		    console.log("App Controller onInit called");
-			this._loadAllModelMetadata();
+			/*this._loadAllModelMetadata();*/
 		},
 
 		_loadAllModelMetadata: function() {

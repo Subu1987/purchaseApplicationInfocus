@@ -9,8 +9,8 @@
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{allCustlistData>/allCustlistDataQuaterlyWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{allCustlistData>CustomerNameShort}"/>
-									<vizData:DimensionDefinition name="Quarter Year" value="{allCustlistData>quateryear}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{allCustlistData>supplierShort}"/>
+									<vizData:DimensionDefinition name="Quarter Year" value="{allCustlistData>quaterYear}"/>
 									<vizData:DimensionDefinition name="Quarter" value="{allCustlistData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
@@ -20,7 +20,7 @@
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
 						</viz:feeds>
@@ -33,9 +33,9 @@
 					<table:Table id="idTable" rows="{allCustlistData>/allCustlistDataQuaterlyWise}" selectionMode="None">
 						<table:columns>
 						    <table:Column>
-								<Label text="Customer Name"/>
+								<Label text="Supplier Name"/>
 								<table:template>
-									<Text text="{allCustlistData>customerName}"/>
+									<Text text="{allCustlistData>supplier}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
@@ -47,7 +47,7 @@
 							<table:Column>
 								<Label text="Quarter Year"/>
 								<table:template>
-									<Text text="{allCustlistData>quateryear}"/>
+									<Text text="{allCustlistData>quaterYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>

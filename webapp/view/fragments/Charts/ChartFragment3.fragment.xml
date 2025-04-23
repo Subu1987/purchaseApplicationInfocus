@@ -24,7 +24,7 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Customer Name" value="{top10listData>CustomerNameShort}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top10listData>supplierShort}"/>
 									<vizData:DimensionDefinition name="Fiscal Year" value="{top10listData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
@@ -34,7 +34,7 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Customer Name"/>
+							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Fiscal Year"/>
 						</viz:feeds>
 					</viz:VizFrame>
@@ -46,9 +46,9 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
-								<m:Label text="Customer Name"/>
+								<m:Label text="Supplier Name"/>
 								<table:template>
-									<m:Text text="{top10listData>customerName}"/>
+									<m:Text text="{top10listData>supplier}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>

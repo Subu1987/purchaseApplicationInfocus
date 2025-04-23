@@ -14,44 +14,12 @@
 			"version": "0.0.0"
 		},
 		"dataSources": {
-			"top10CustomerService": {
-				"uri": "/sap/opu/odata/sap/Z_INF_TOP10_QTR_TRNOVR_SRV/",
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/Z_INF_PURCHASE_TURNOVER_SRV/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
-					"localUri": "localService/metadata.xml"
-				}
-			},
-			"singleCustomerService": {
-				"uri": "/sap/opu/odata/sap/Z_INF_SINGLE_CUST_QTR_TRNOVR_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/Z_INF_SINGLE_CUST_QTR_TRNOVR_SRV/metadata.xml"
-				}
-			},
-			"allCustomerService": {
-				"uri": "/sap/opu/odata/sap/Z_INF_ALL_CUST_QTR_TRNOVR_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/Z_INF_ALL_CUST_QTR_TRNOVR_SRV/metadata.xml"
-				}
-			},
-			"quarterlyTurnoverService": {
-				"uri": "/sap/opu/odata/sap/Z_INF_QUATERLY_TURNOVER_SRV/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/Z_INF_QUATERLY_TURNOVER_SRV/metadata.xml"
-				}
-			},
-			"customerMasterService": {
-				"uri": "/sap/opu/odata/sap/ZCUST_MASTER_CDS/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/ZCUST_MASTER_CDS/metadata.xml"
+					"localUri": "localService/Z_INF_PURCHASE_TURNOVER_SRV/metadata.xml"
 				}
 			}
 		}
@@ -105,43 +73,13 @@
 					"bundleName": "com.infocus.purchaseApplication.i18n.i18n"
 				}
 			},
-			"top10CustomerModel": {
-				"dataSource": "top10CustomerService",
+			"": {
+				"dataSource": "mainService",
 				"preload": true,
 				"settings": {
-					"useBatch": false
+					"useBatch": true,
+					"defaultBindingMode": "TwoWay"
 				}
-			},
-			"singleCustomerModel": {
-				"dataSource": "singleCustomerService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"allCustomerModel": {
-				"dataSource": "allCustomerService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"quarterlyTurnoverModel": {
-				"dataSource": "quarterlyTurnoverService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"customerMasterModel": {
-				"dataSource": "customerMasterService",
-				"preload": true,
-				"settings": {
-					"useBatch": false
-				}
-			},
-			"authData": {
-				"type": "sap.ui.model.json.JSONModel"
 			},
 			"globalData": {
 				"type": "sap.ui.model.json.JSONModel"
@@ -158,7 +96,7 @@
 			"quarterlyTurnoverlistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
-			"customerMasterData": {
+			"supplierMasterData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
 			"top10CustChartData": {
@@ -208,7 +146,7 @@
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/sap/zsalesoverview/webapp",
+		"uri": "/sap/bc/ui5_ui5/sap/zpurchaseapp/webapp",
 		"_version": "1.1.0"
 	}
 }
