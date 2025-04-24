@@ -16,18 +16,29 @@ sap.ui.define([
 		/*************** on Load Functions *****************/
 		onInit: function() {
 
-			// Initialize the user ID and other parameters
-			this._initializeAppData();
+			this._initializeApp();
 
-			// Update the global data model
-			this._updateGlobalDataModel();
-
+		},
+		_initializeApp: function() {
+			try {
+				this._initializeAppData();
+				this._updateGlobalDataModel();
+			} catch (err) {
+				console.error("Error initializing the app:", err);
+				sap.m.MessageBox.error("An error occurred during app initialization. Please contact support.");
+			}
 		},
 		_initializeAppData: function() {
 			this.getSupplierMasterParametersData();
 		},
 		_updateGlobalDataModel: function() {
 			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			if (!oGlobalDataModel) {
+				console.error("Global data model is not available.");
+				sap.m.MessageToast.show("Unable to access global data model.");
+				return;
+			}
+
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/selectedTabText", "All Supplier Turnover");
 				oGlobalDataModel.setProperty("/isChartFragment1Visible", true);
@@ -104,34 +115,50 @@ sap.ui.define([
 		getSupplierMasterParametersData: function() {
 			var that = this;
 			var oModel = this.getOwnerComponent().getModel();
-			var pUrl = "/SUPP_MasterSet";
+			var oSupplierMasterModel = this.getOwnerComponent().getModel("supplierMasterData");
+			var sUrl = "/SUPP_MasterSet";
+
+			if (!oModel || !oSupplierMasterModel) {
+				console.error("Required models are not available.");
+				sap.m.MessageBox.error("Could not access required models for fetching supplier data.");
+				return;
+			}
 
 			sap.ui.core.BusyIndicator.show();
-			oModel.read(pUrl,{
-				success: function(response) {
-					var pData = response.results;
-					console.log(pData);
 
-					// Sort the data based on the Customer number (Customer field)
-					pData.sort(function(a, b) {
-						// Convert customer number to integers for correct numerical sorting
-						return parseInt(a.Customer) - parseInt(b.Customer);
+			oModel.read(sUrl, {
+				success: function(oResponse) {
+					sap.ui.core.BusyIndicator.hide();
+
+					var aResults = oResponse && oResponse.results ? oResponse.results : [];
+
+					// Sort suppliers numerically by lifnr (supplier number)
+					aResults.sort(function(a, b) {
+						var iA = parseInt(a.lifnr, 10);
+						var iB = parseInt(b.lifnr, 10);
+						return iA - iB;
 					});
-					sap.ui.core.BusyIndicator.hide();
 
-					// set the Customer data 
-					var oSupplierMasterData = that.getOwnerComponent().getModel("supplierMasterData");
-					oSupplierMasterData.setData(pData);
-
+					oSupplierMasterModel.setData(aResults || []);
+					console.log("Supplier master data loaded:", aResults);
 				},
-				error: function(error) {
+				error: function(oError) {
 					sap.ui.core.BusyIndicator.hide();
-					console.log(error);
-					var errorObject = JSON.parse(error.responseText);
-					sap.m.MessageBox.error(errorObject.error.message.value);
+					console.error("Error fetching supplier master data:", oError);
+
+					var sErrorMessage = "Failed to fetch supplier master data.";
+					try {
+						var oErrorObj = JSON.parse(oError.responseText);
+						if (oErrorObj && oErrorObj.error && oErrorObj.error.message && oErrorObj.error.message.value) {
+							sErrorMessage = oErrorObj.error.message.value;
+						}
+					} catch (e) {
+						console.warn("Error parsing error response JSON:", e);
+					}
+
+					sap.m.MessageBox.error(sErrorMessage);
 				}
 			});
-
 		},
 
 		/*************** set the inputId & create the fragment *****************/
@@ -151,6 +178,7 @@ sap.ui.define([
 					oDialog.open();
 				}).catch(function(oError) {
 					console.error("Error loading Supplier Master Dialog:", oError);
+					sap.m.MessageBox.error("Failed to open Supplier Master dialog.");
 				});
 			} else {
 				this._oSupplierMasterDialog.open();
@@ -158,28 +186,49 @@ sap.ui.define([
 		},
 		handleValueFiscalYear: function(oEvent) {
 			this._financialYearInputId = oEvent.getSource().getId();
-			// open fragment
+			var that = this;
+
 			if (!this.oOpenDialogFiscalYear) {
-				this.oOpenDialogFiscalYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogFiscalYear", this);
-				this.getView().addDependent(this.oOpenDialogFiscalYear);
+				try {
+					this.oOpenDialogFiscalYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogFiscalYear", this);
+					this.getView().addDependent(this.oOpenDialogFiscalYear);
+				} catch (err) {
+					console.error("Failed to load Fiscal Year dialog:", err);
+					sap.m.MessageBox.error("Failed to open Fiscal Year dialog.");
+					return;
+				}
 			}
 			this.oOpenDialogFiscalYear.open();
 		},
 		handleValueQuarter: function(oEvent) {
 			this._quarterInputId = oEvent.getSource().getId();
-			// open fragment
+			var that = this;
+
 			if (!this.oOpenDialogQuarter) {
-				this.oOpenDialogQuarter = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarter", this);
-				this.getView().addDependent(this.oOpenDialogQuarter);
+				try {
+					this.oOpenDialogQuarter = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarter", this);
+					this.getView().addDependent(this.oOpenDialogQuarter);
+				} catch (err) {
+					console.error("Failed to load Quarter dialog:", err);
+					sap.m.MessageBox.error("Failed to open Quarter dialog.");
+					return;
+				}
 			}
 			this.oOpenDialogQuarter.open();
 		},
 		handleValueQuarterYear: function(oEvent) {
 			this._quarterInputYearId = oEvent.getSource().getId();
-			// open fragment
+			var that = this;
+
 			if (!this.oOpenDialogQuarterYear) {
-				this.oOpenDialogQuarterYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarterYear", this);
-				this.getView().addDependent(this.oOpenDialogQuarterYear);
+				try {
+					this.oOpenDialogQuarterYear = sap.ui.xmlfragment("com.infocus.purchaseApplication.view.dialogComponent.DialogQuarterYear", this);
+					this.getView().addDependent(this.oOpenDialogQuarterYear);
+				} catch (err) {
+					console.error("Failed to load Quarter Year dialog:", err);
+					sap.m.MessageBox.error("Failed to open Quarter Year dialog.");
+					return;
+				}
 			}
 			this.oOpenDialogQuarterYear.open();
 		},
@@ -535,7 +584,7 @@ sap.ui.define([
 
 			var oSelectedTabText = oGlobalData.selectedTabText;
 			var aFiscalYears = oGlobalData.fiscalYears || [];
-			var aSelectedCustomerMasterData = oGlobalData.selectedCustomerIDs || [];
+			var aSelectedSupplierMasterData = oGlobalData.selectedSupplierIDs || [];
 			var aQuarters = oGlobalData.selectedQuarters || [];
 			var aQuarterYears = oGlobalData.selectedQuarterYears || [];
 
@@ -573,9 +622,9 @@ sap.ui.define([
 			}
 
 			// Add supplier filter (for both tabs)
-			if (oSelectedTabText === "Single Supplier Turnover" && aSelectedCustomerMasterData.length > 0) {
+			if (oSelectedTabText === "Single Supplier Turnover" && aSelectedSupplierMasterData.length > 0) {
 				filters.push(new Filter({
-					filters: aSelectedCustomerMasterData.map(function(cust) {
+					filters: aSelectedSupplierMasterData.map(function(cust) {
 						return new Filter("supplier", FilterOperator.EQ, cust);
 					}),
 					and: false
@@ -656,7 +705,7 @@ sap.ui.define([
 			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
-			var oTop10CustListDataModel = oComponent.getModel("top10listData");
+			var oTop5CustListDataModel = oComponent.getModel("top5listData");
 			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 
 			// reusable filter function 
@@ -680,10 +729,10 @@ sap.ui.define([
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
-					var sPropertyPath = isSelectedIndex ? "/top10CustlistDataFiscalYearWise" : "/top10CustlistDataQuaterlyWise";
+					var sPropertyPath = isSelectedIndex ? "/top5CustlistDataFiscalYearWise" : "/top5CustlistDataQuaterlyWise";
 					var sFragmentId = isSelectedIndex ? "chartFragment3" : "chartFragment4";
 
-					oTop10CustListDataModel.setProperty(sPropertyPath, oData);
+					oTop5CustListDataModel.setProperty(sPropertyPath, oData);
 
 					// Toggle visibility of chart fragments
 					oGlobalDataModel.setProperty("/isChartFragment3Visible", isSelectedIndex);
@@ -928,8 +977,8 @@ sap.ui.define([
 								"/allCustlistDataQuaterlyWise"
 							],
 							top10listData: [
-								"/top10CustlistDataFiscalYearWise",
-								"/top10CustlistDataQuaterlyWise"
+								"/top5CustlistDataFiscalYearWise",
+								"/top5CustlistDataQuaterlyWise"
 							],
 							singleCustlistData: [
 								"/singleCustlistDataFiscalYearWise",
@@ -1028,12 +1077,9 @@ sap.ui.define([
 						rules
 					},
 					dataLabel: {
-						visible: true
+						visible: true,
 					},
 					drawingEffect: "glossy"
-				},
-				tooltip: {
-					visible: true
 				},
 				interaction: {
 					selectability: {
@@ -1041,6 +1087,7 @@ sap.ui.define([
 					}
 				}
 			});
+
 		},
 		generateColorMapByQuarterlyWise: function(data, selectedTabText) {
 			var colorMap = {};

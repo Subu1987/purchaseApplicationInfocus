@@ -9,56 +9,34 @@ sap.ui.define([
 
 		onInit: function() {
 		    console.log("App Controller onInit called");
-			/*this._loadAllModelMetadata();*/
+
+			// Load metadata for the default OData model (defined in manifest)
+			this._loadAllModelMetadata();
 		},
 
 		_loadAllModelMetadata: function() {
 			BusyIndicator.show(0); // Show immediately
 
 			setTimeout(() => {
-				// Map of model names to user-friendly labels
-				const modelMap = {
-					"top10CustomerModel": "Top 10 Customer",
-					"singleCustomerModel": "Single Customer",
-					"allCustomerModel": "All Customers",
-					"quarterlyTurnoverModel": "Quarterly Turnover",
-					"customerMasterModel": "Customer Master"
-				};
+				const oModel = this.getOwnerComponent().getModel();
+				if (!oModel) {
+					BusyIndicator.hide();
+					MessageBox.error("OData Model not found. Please check manifest.json configuration.");
+					return;
+				}
 
-				// Create metadata loading promises
-				const modelPromises = Object.keys(modelMap).map(modelName => {
-					const model = this.getOwnerComponent().getModel(modelName);
-					return model.metadataLoaded()
-						.then(() => ({
-							status: "fulfilled",
-							modelName
-						}))
-						.catch(() => ({
-							status: "rejected",
-							modelName
-						}));
-				});
+				oModel.metadataLoaded()
+					.then(() => {
+						console.log("✅ OData model metadata loaded successfully.");
+						BusyIndicator.hide();
+					})
+					.catch((err) => {
+						console.error("❌ Failed to load metadata:", err);
+						BusyIndicator.hide();
 
-				// Wait for all metadata loads
-				Promise.all(modelPromises).then(results => {
-					BusyIndicator.hide(); // Hide after everything
-
-					const failedModels = results.filter(r => r.status === "rejected");
-
-					if (failedModels.length > 0) {
-						const failedNames = failedModels
-							.map(item => `• ${modelMap[item.modelName]}`)
-							.join("\n");
-
-						const errorMessage = `The following data failed to load:\n\n${failedNames}\n\nPlease try again or contact support.`;
-
-						MessageBox.error(errorMessage);
-					} else {
-						// Optional: You can log or toast if you ever want
-						console.log("✅ All model metadata loaded successfully.");
-					}
-				});
-			}, 0); // Give UI time to show BusyIndicator
+						MessageBox.error("Failed to load metadata for the OData service. Please try again or contact support.");
+					});
+			}, 0);
 		}
 	});
 });

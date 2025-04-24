@@ -87,7 +87,7 @@
 			"allCustlistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
-			"top10listData": {
+			"top5listData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
 			"singleCustlistData": {

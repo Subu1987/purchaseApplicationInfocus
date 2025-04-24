@@ -22,13 +22,13 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataFiscalYearWise}">
+							<vizData:FlattenedDataset data="{top5listData>/top5CustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{top10listData>supplierShort}"/>
-									<vizData:DimensionDefinition name="Fiscal Year" value="{top10listData>fiscalYear}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplierShort}"/>
+									<vizData:DimensionDefinition name="Fiscal Year" value="{top5listData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top5listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
@@ -43,24 +43,24 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataFiscalYearWise}" selectionMode="None">
+					<table:Table id="idTable" rows="{top5listData>/top5CustlistDataFiscalYearWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
 								<m:Label text="Supplier Name"/>
 								<table:template>
-									<m:Text text="{top10listData>supplier}"/>
+									<m:Text text="{top5listData>supplier}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<m:Label text="Fiscal Year"/>
 								<table:template>
-									<m:Text text="{top10listData>fiscalYear}"/>
+									<m:Text text="{top5listData>fiscalYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<m:Label text="Turn Over (Cr)"/>
 								<table:template>
-									<m:Text text="{top10listData>turnOver}"/>
+									<m:Text text="{top5listData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

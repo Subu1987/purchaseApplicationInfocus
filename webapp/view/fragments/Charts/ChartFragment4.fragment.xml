@@ -8,14 +8,14 @@
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{top10listData>/top10CustlistDataQuaterlyWise}">
+							<vizData:FlattenedDataset data="{top5listData>/top5CustlistDataQuaterlyWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{top10listData>supplierShort}"/>
-									<vizData:DimensionDefinition name="Quarter Year" value="{top10listData>quaterYear}"/>
-									<vizData:DimensionDefinition name="Quarter" value="{top10listData>quater}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplierShort}"/>
+									<vizData:DimensionDefinition name="Quarter Year" value="{top5listData>quaterYear}"/>
+									<vizData:DimensionDefinition name="Quarter" value="{top5listData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top10listData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top5listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
@@ -31,30 +31,30 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{top10listData>/top10CustlistDataQuaterlyWise}" selectionMode="None">
+					<table:Table id="idTable" rows="{top5listData>/top5CustlistDataQuaterlyWise}" selectionMode="None">
 						<table:columns>
 							<table:Column>
 								<Label text="Supplier Name"/>
 								<table:template>
-									<Text text="{top10listData>supplier}"/>
+									<Text text="{top5listData>supplier}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Quarter"/>
 								<table:template>
-									<Text text="{top10listData>quater}"/>
+									<Text text="{top5listData>quater}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Quarter Year"/>
 								<table:template>
-									<Text text="{top10listData>quaterYear}"/>
+									<Text text="{top5listData>quaterYear}"/>
 								</table:template>
 							</table:Column>
 							<table:Column>
 								<Label text="Turn Over (Cr)"/>
 								<table:template>
-									<Text text="{top10listData>turnOver}"/>
+									<Text text="{top5listData>turnOver}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>
