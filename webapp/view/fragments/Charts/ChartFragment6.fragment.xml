@@ -7,6 +7,10 @@
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+						<!-- Define dependents for Popover -->
+						<viz:dependents>
+							<viz:Popover id="idPopOverQuaterlyWise"></viz:Popover>
+						</viz:dependents>
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{singleCustlistData>/singleCustlistDataQuaterlyWise}">
 								<vizData:dimensions>

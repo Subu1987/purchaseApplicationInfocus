@@ -21,6 +21,10 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
 					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+						<!-- Define dependents for Popover -->
+						<viz:dependents>
+							<viz:Popover id="idPopOverFiscalYearWise"></viz:Popover>
+						</viz:dependents>
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top5listData>/top5CustlistDataFiscalYearWise}">
 								<vizData:dimensions>

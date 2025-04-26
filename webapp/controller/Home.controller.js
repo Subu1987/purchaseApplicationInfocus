@@ -896,7 +896,7 @@ sap.ui.define([
 			oData.forEach(item => {
 				this.convertTurnoverToCrore(item);
 				if (oSelectedTabText !== "Purchase Turnover") {
-					this.generateSupplierShort(item);
+					this.generateSupplierShort(item, oSelectedTabText);
 				}
 
 			});
@@ -915,7 +915,8 @@ sap.ui.define([
 				.join("")
 				.toUpperCase();
 
-			item.supplierShort = abbreviation || item.supplier;
+			/*item.supplierShort = abbreviation || item.supplier;*/
+			item.supplierShort = item.supplier;
 		},
 
 		/*************** Clear data from all input fields,radio button & model make it default  *****************/
@@ -1084,10 +1085,54 @@ sap.ui.define([
 				interaction: {
 					selectability: {
 						mode: "multiple"
-					}
+					},
 				}
 			});
 
+			// Use bind to pass sFragmentId and call _onChartSelect
+			oVizFrame.attachSelectData(this._onChartSelectFiscalYearWise.bind(this, sFragmentId));
+
+		},
+		_onChartSelectFiscalYearWise: function(sFragmentId, oEvent) {
+			var oVizFrame = oEvent.getSource();
+			var oPopover = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idPopOverFiscalYearWise");
+
+			if (!oPopover) {
+				console.warn("Popover not found for Fragment ID:", sFragmentId)
+				return;
+			}
+
+			// Get selected data from the event (it will be in the 'data' parameter of the event)
+			var aSelectedData = oEvent.getParameter("data");
+
+			if (!aSelectedData || aSelectedData.length === 0) {
+				console.warn("No data selected");
+				return;
+			}
+
+			// We assume single selection and access the first item in the selected data array
+			var oSelectedItem = aSelectedData[0];
+
+			// Directly get the data from the selected item
+			var oDataContext = oSelectedItem.data; // Directly access the data (it may not need 'data.data')
+
+			// Assuming you are accessing Supplier Name, Fiscal Year, and Turnover
+			var sSupplier = oDataContext["Supplier Name"];
+			var sFiscalYear = oDataContext["Fiscal Year"];
+			var sTurnover = oDataContext["Turn Over (Cr)"]; // Adjust the field name as necessary
+
+			// Create a JSON model to hold the data for the Popover
+			var oPopoverModel = new sap.ui.model.json.JSONModel({
+				supplier: sSupplier,
+				fiscalYear: sFiscalYear,
+				turnover: sTurnover
+			});
+
+			// Set the model on the Popover
+			oPopover.setModel(oPopoverModel);
+
+			// Connect the Popover to the VizFrame
+			oPopover.connect(oVizFrame.getVizUid());
 		},
 		generateColorMapByQuarterlyWise: function(data, selectedTabText) {
 			var colorMap = {};
@@ -1165,15 +1210,58 @@ sap.ui.define([
 					},
 					drawingEffect: "glossy"
 				},
-				tooltip: {
-					visible: true
-				},
 				interaction: {
 					selectability: {
 						mode: "multiple"
 					}
 				}
 			});
+
+			// Use bind to pass sFragmentId and call _onChartSelect
+			oVizFrame.attachSelectData(this._onChartSelectQuarterlyWise.bind(this, sFragmentId));
+		},
+		_onChartSelectQuarterlyWise: function(sFragmentId, oEvent) {
+			var oVizFrame = oEvent.getSource();
+			var oPopover = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idPopOverQuaterlyWise");
+
+			if (!oPopover) {
+				console.warn("Popover not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			// Get selected data from the event (it will be in the 'data' parameter of the event)
+			var aSelectedData = oEvent.getParameter("data");
+
+			if (!aSelectedData || aSelectedData.length === 0) {
+				console.warn("No data selected");
+				return;
+			}
+
+			// We assume single selection and access the first item in the selected data array
+			var oSelectedItem = aSelectedData[0];
+
+			// Directly get the data from the selected item
+			var oDataContext = oSelectedItem.data; // Directly access the data (it may not need 'data.data')
+
+			// Assuming you are accessing Supplier Name, Quarter, Quarter Year, and Turnover
+			var sSupplier = oDataContext["Supplier Name"];
+			var sQuarter = oDataContext["Quarter"];
+			var sQuarterYear = oDataContext["Quarter Year"];
+			var sTurnover = oDataContext["Turn Over (Cr)"]; // Adjust the field name as necessary
+
+			// Create a JSON model to hold the data for the Popover
+			var oPopoverModel = new sap.ui.model.json.JSONModel({
+				supplier: sSupplier,
+				quarter: sQuarter,
+				quarterYear: sQuarterYear,
+				turnover: sTurnover
+			});
+
+			// Set the model on the Popover
+			oPopover.setModel(oPopoverModel);
+
+			// Connect the Popover to the VizFrame
+			oPopover.connect(oVizFrame.getVizUid());
 		}
 
 	});
