@@ -14,17 +14,17 @@
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top5listData>/top5CustlistDataQuaterlyWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplierShort}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplier}"/>
 									<vizData:DimensionDefinition name="Quarter Year" value="{top5listData>quaterYear}"/>
 									<vizData:DimensionDefinition name="Quarter" value="{top5listData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top5listData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (₹ Cr)" value="{top5listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (₹ Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
@@ -56,7 +56,7 @@
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<Label text="Turn Over (Cr)"/>
+								<Label text="Turn Over (₹ Cr)"/>
 								<table:template>
 									<Text text="{top5listData>turnOver}"/>
 								</table:template>

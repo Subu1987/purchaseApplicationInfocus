@@ -28,16 +28,16 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{top5listData>/top5CustlistDataFiscalYearWise}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplierShort}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top5listData>supplier}"/>
 									<vizData:DimensionDefinition name="Fiscal Year" value="{top5listData>fiscalYear}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{top5listData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (₹ Cr)" value="{top5listData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (₹ Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Fiscal Year"/>
 						</viz:feeds>
@@ -62,7 +62,7 @@ xmlns:vizFeeds="sap.viz.ui5.controls.common.feeds">
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<m:Label text="Turn Over (Cr)"/>
+								<m:Label text="Turn Over (₹ Cr)"/>
 								<table:template>
 									<m:Text text="{top5listData>turnOver}"/>
 								</table:template>

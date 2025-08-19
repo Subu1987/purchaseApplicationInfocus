@@ -87,10 +87,20 @@
 			"allCustlistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"allSupplierDuelistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+
 			"top5listData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"top5SupplierDuelistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
 			"singleCustlistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"singleSupplierDuelistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
 			"quarterlyTurnoverlistData": {

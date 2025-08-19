@@ -40,12 +40,12 @@
     "blockPushLevel": "Error"
   },
   "build": {
-    "buildRequired": false,
+    "buildRequired": true,
     "sourceFolder": "webapp",
     "targetFolder": "dist",
     "excludedFolders": [],
     "excludedFiles": [],
-    "lastBuildDateTime": "Mon, 28 Apr 2025 06:08:33 GMT",
+    "lastBuildDateTime": "Thu, 14 Aug 2025 12:36:18 GMT",
     "availableFoldersComboBox": [
       {
         "text": "localService"
@@ -152,7 +152,7 @@
     "mockRequestsFilePath": ""
   },
   "deploy": {
-    "destination": "VML",
+    "destination": "S4D",
     "name": "ZPURCHASEAPP"
   }
 }

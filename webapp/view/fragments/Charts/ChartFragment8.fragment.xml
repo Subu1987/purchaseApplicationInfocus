@@ -18,12 +18,12 @@
 									<vizData:DimensionDefinition name="Quarter" value="{singleCustlistData>quater}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Turn Over (Cr)" value="{quarterlyTurnoverlistData>turnOver}"/>
+									<vizData:MeasureDefinition name="Turn Over (₹ Cr)" value="{quarterlyTurnoverlistData>turnOver}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
-							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (Cr)"/>
+							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Turn Over (₹ Cr)"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter Year"/>
 							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Quarter"/>
 						</viz:feeds>
@@ -54,7 +54,7 @@
 								</table:template>
 							</table:Column>
 							<table:Column>
-								<Label text="Turn Over (Cr)"/>
+								<Label text="Turn Over (₹ Cr)"/>
 								<table:template>
 									<Text text="{quarterlyTurnoverlistData>turnOver}"/>
 								</table:template>

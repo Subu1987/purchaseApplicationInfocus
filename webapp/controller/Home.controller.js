@@ -41,6 +41,7 @@ sap.ui.define([
 
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/selectedTabText", "All Supplier Turnover");
+				oGlobalDataModel.setProperty("/selectedTabTextSupplierDue", "All Supplier Outstanding");
 				oGlobalDataModel.setProperty("/isChartFragment1Visible", true);
 				oGlobalDataModel.setProperty("/isChartFragment2Visible", false);
 				oGlobalDataModel.setProperty("/isChartFragment3Visible", true);
@@ -284,7 +285,7 @@ sap.ui.define([
 			});
 		},
 
-		/*************** set the each property to globalData & reflect data in input field  *****************/
+		/*************** set the each property to globalData & reflect data in input field & Date Picker *****************/
 
 		onSelectionChangeSupplierMaster: function(oEvent) {
 			var oList = oEvent.getSource();
@@ -446,6 +447,28 @@ sap.ui.define([
 				oItem.setVisible(true);
 			});
 		},
+		onSupplierDueDateChange: function(oEvent) {
+			var oDatePicker = oEvent.getSource();
+			var sValue = oEvent.getParameter("value"); // formatted as yyyyMMdd (because of valueFormat)
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+
+			if (!sValue) {
+				// If cleared, reset the model value
+				oGlobalModel.setProperty("/selectedSupplierDueDate", null);
+				return;
+			}
+
+			// Optional: validate date
+			var oDate = oDatePicker.getDateValue();
+			if (!oDate) {
+				sap.m.MessageToast.show("Invalid date selected. Please try again.");
+				oGlobalModel.setProperty("/selectedSupplierDueDate", null);
+				return;
+			}
+
+			// Store in model (already yyyyMMdd due to valueFormat)
+			oGlobalModel.setProperty("/selectedSupplierDueDate", sValue);
+		},
 
 		/*************** Clear the input value in livechange event  *****************/
 
@@ -489,18 +512,51 @@ sap.ui.define([
 			var oFiscalYearBox = this.getView().byId("fiscalYearBox");
 			var oQuarterBox = this.getView().byId("quarterBox");
 			var oQuarterYearBox = this.getView().byId("quarterYearBox");
-			var oButtonBox = this.getView().byId("buttonBox");
+			var oSupplierDueDatePickerBox = this.getView().byId("supplierDueDatePickerBox");
+			var oPanelNormalViewBox = this.getView().byId("panelNormalViewBox");
+			var oPanelSupplierDueViewBox = this.getView().byId("panelSupplierDueViewBox");
+			var oPanelSupplierDueQtrFyViewBox = this.getView().byId("panelSupplierDueQtrFyViewBox");
+
+			/*var oButtonBox = this.getView().byId("buttonBox");*/
 
 			if (sSelectedKey === 0) { // Fiscal Year Wise selected
 				oFiscalYearBox.setVisible(true);
 				oQuarterBox.setVisible(false);
 				oQuarterYearBox.setVisible(false);
-				oButtonBox.setVisible(true);
+				oSupplierDueDatePickerBox.setVisible(false);
+				oPanelNormalViewBox.setVisible(true);
+				oPanelSupplierDueViewBox.setVisible(false);
+				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+
 			} else if (sSelectedKey === 1) { // Quarterly Wise selected
 				oFiscalYearBox.setVisible(false);
 				oQuarterBox.setVisible(true);
 				oQuarterYearBox.setVisible(true);
-				oButtonBox.setVisible(true);
+				oSupplierDueDatePickerBox.setVisible(false);
+				oPanelNormalViewBox.setVisible(true);
+				oPanelSupplierDueViewBox.setVisible(false);
+				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+
+			} else if (sSelectedKey === 2) {
+
+				oFiscalYearBox.setVisible(false);
+				oQuarterBox.setVisible(false);
+				oQuarterYearBox.setVisible(false);
+				oSupplierDueDatePickerBox.setVisible(true);
+				oPanelNormalViewBox.setVisible(false);
+				oPanelSupplierDueViewBox.setVisible(true);
+				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+
+			} else {
+
+				oFiscalYearBox.setVisible(false);
+				oQuarterBox.setVisible(true);
+				oQuarterYearBox.setVisible(true);
+				oSupplierDueDatePickerBox.setVisible(false);
+				oPanelNormalViewBox.setVisible(false);
+				oPanelSupplierDueViewBox.setVisible(false);
+				oPanelSupplierDueQtrFyViewBox.setVisible(true);
+
 			}
 		},
 		/*onChartTypeChange: function(oEvent) {
@@ -541,6 +597,33 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/selectedTabText", oTextMapping[sSelectedKey] || "");
 			}
 		},
+		onTabSelectSupplierDue: function(oEvent) {
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			var oCustomerMasterBox = this.getView().byId("customerMasterBox");
+
+			// Get the selected tab key
+			var sSelectedKey = oEvent.getParameter("selectedKey");
+
+			// Define the mapping of keys to text values
+			var oTextMapping = {
+				"scenario1": "All Supplier Outstanding",
+				"scenario2": "Top 5 Supplier Outstanding",
+				"scenario3": "Single Supplier Outstanding",
+				"scenario4": "Total Outstanding"
+			};
+
+			// visible non-visible on customer box
+			if (oTextMapping[sSelectedKey] === "Single Supplier Outstanding") {
+				oCustomerMasterBox.setVisible(true);
+			} else {
+				oCustomerMasterBox.setVisible(false);
+			}
+
+			// Update the global model with the corresponding text
+			if (oGlobalDataModel) {
+				oGlobalDataModel.setProperty("/selectedTabTextSupplierDue", oTextMapping[sSelectedKey] || "");
+			}
+		},
 
 		/*************** get the table data from oData service  *****************/
 
@@ -555,29 +638,40 @@ sap.ui.define([
 			return false; // Return false for null, undefined, or empty values
 		},
 		getBackendData: function() {
-
-			if (!this.validateInputs()) {
-				/*sap.m.MessageBox.error("Please fill all required fields.");*/
-				return;
-			}
-
 			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
-			var oSelectedTabText = oGlobalData.selectedTabText;
+			var sSelectedTabText = oGlobalData.selectedTabText;
+			var sSelectedTabTextSupplierDue = oGlobalData.selectedTabTextSupplierDue;
+			var iSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 
-			if (oSelectedTabText === "All Supplier Turnover") {
-				this.getAllCustomerData();
-
-			} else if (oSelectedTabText === "Top 5 Supplier Turnover") {
-				this.getTop5CustomerData();
-
-			} else if (oSelectedTabText === "Single Supplier Turnover") {
-				this.getSingleCustomerData();
-
+			if (iSelectedIndex === 0 || iSelectedIndex === 1) {
+				switch (sSelectedTabText) {
+					case "All Supplier Turnover":
+						this.getAllSupplierData();
+						break;
+					case "Top 5 Supplier Turnover":
+						this.getTop5SupplierData();
+						break;
+					case "Single Supplier Turnover":
+						this.getSingleSupplierData();
+						break;
+					default:
+						this.getQuarterlyData();
+				}
 			} else {
-				this.getQuarterlyData();
-
+				switch (sSelectedTabTextSupplierDue) {
+					case "All Supplier Outstanding":
+						this.getAllSupplierDueData();
+						break;
+					case "Top 5 Supplier Outstanding":
+						this.getTop5SupplierDueData();
+						break;
+					case "Single Supplier Outstanding":
+						this.getSingleSupplierDueData();
+						break;
+					default:
+						this.getTotalSupplerDueData();
+				}
 			}
-
 		},
 		_buildFilters: function(oGlobalData, oSelectedIndex) {
 			var filters = [];
@@ -633,7 +727,32 @@ sap.ui.define([
 
 			return filters;
 		},
-		getAllCustomerData: function() {
+		_buildSupplierDueFilters: function(oGlobalData, oSelectedIndex) {
+			var filters = [];
+
+			var aSelectedSupplierMasterData = oGlobalData.selectedSupplierIDs || [];
+			var sSelectedSupplierDueDate = oGlobalData.selectedSupplierDueDate; // single value from DatePicker
+			var sSelectedTabTextSupplierDue = oGlobalData.selectedTabTextSupplierDue;
+
+			// Supplier filter
+			if (sSelectedTabTextSupplierDue === "Single Supplier Outstanding" && aSelectedSupplierMasterData.length > 0) {
+				filters.push(new sap.ui.model.Filter({
+					filters: aSelectedSupplierMasterData.map(function(cust) {
+						return new sap.ui.model.Filter("lifnr", sap.ui.model.FilterOperator.EQ, cust);
+					}),
+					and: false
+				}));
+			}
+
+			// Date filter
+			/*var sFormattedDate = this._formatDateForOData(sSelectedSupplierDueDate);*/
+			if (sSelectedSupplierDueDate) {
+				filters.push(new sap.ui.model.Filter("datum", sap.ui.model.FilterOperator.EQ, sSelectedSupplierDueDate));
+			}
+
+			return filters;
+		},
+		getAllSupplierData: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
@@ -652,13 +771,11 @@ sap.ui.define([
 
 			// OData call to fetch data
 			oModel.read("/SUPPSet", {
-				urlParameters: {
-					"sap-client": "300"
-				},
 				filters: filters,
 				success: function(response) {
-					var oData = response.results || [];
-					console.log("Raw Response Data:", oData);
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
 
 					// format customer data function
 					that.formatCustomerData(oData);
@@ -697,7 +814,57 @@ sap.ui.define([
 				}
 			});
 		},
-		getTop5CustomerData: function() {
+		getAllSupplierDueData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oAllSupplierDuelistModel = oComponent.getModel("allSupplierDuelistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/es_outstandingset", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					/*var oData = that.sortByTurnOverDesc(response.results || []);*/
+					var oData = response.results || [];
+					console.log("All Supplier Due Data:", oData);
+					oAllSupplierDuelistModel.setProperty("/", oData);
+
+					// Bind chart
+					/*isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);*/
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getTop5SupplierData: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
@@ -716,13 +883,11 @@ sap.ui.define([
 
 			// OData call to fetch data
 			oModel.read("/Supp_Top5Set", {
-				urlParameters: {
-					"sap-client": "300"
-				},
 				filters: filters,
 				success: function(response) {
-					var oData = response.results || [];
-					console.log(oData);
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
 
 					// format customer data function
 					that.formatCustomerData(oData);
@@ -761,7 +926,59 @@ sap.ui.define([
 				}
 			});
 		},
-		getSingleCustomerData: function() {
+		getTop5SupplierDueData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oTop5SupplierDuelistModel = oComponent.getModel("top5SupplierDuelistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/es_outstandingset", {
+				filters: filters,
+				urlParameters: {
+					"$top": 5
+				},
+				success: function(response) {
+					// sorting the oData
+					var oData = response.results || [];
+					console.log("Top5 Supplier Due Data:", oData);
+					oTop5SupplierDuelistModel.setProperty("/", oData);
+
+					// Bind chart
+					/*isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);*/
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getSingleSupplierData: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
@@ -780,13 +997,11 @@ sap.ui.define([
 
 			// OData call to fetch data
 			oModel.read("/SINGLE_SUPPSet", {
-				urlParameters: {
-					"sap-client": "300"
-				},
 				filters: filters,
 				success: function(response) {
-					var oData = response.results || [];
-					console.log(oData);
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
 
 					// format customer data function
 					that.formatCustomerData(oData);
@@ -805,6 +1020,55 @@ sap.ui.define([
 					// Bind chart
 					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 						sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getSingleSupplierDueData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oSingleSupplierDuelistModel = oComponent.getModel("singleSupplierDuelistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/es_outstandingset", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					var oData = response.results || [];
+					console.log("Single Supplier Due Data:", oData);
+					oSingleSupplierDuelistModel.setProperty("/", oData);
+
+					// Bind chart
+					/*isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);*/
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -844,13 +1108,11 @@ sap.ui.define([
 
 			// OData call to fetch data
 			oModel.read("/POSet", {
-				urlParameters: {
-					"sap-client": "300"
-				},
 				filters: filters,
 				success: function(response) {
-					var oData = response.results || [];
-					console.log(oData);
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
 
 					// format customer data function
 					that.formatCustomerData(oData);
@@ -890,6 +1152,13 @@ sap.ui.define([
 				}
 			});
 		},
+
+		/*************** helper function  *****************/
+		sortByTurnOverDesc: function(aData) {
+			return aData.sort(function(a, b) {
+				return parseFloat(b.turnOver) - parseFloat(a.turnOver);
+			});
+		},
 		formatCustomerData: function(oData) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
@@ -917,6 +1186,19 @@ sap.ui.define([
 
 			/*item.supplierShort = abbreviation || item.supplier;*/
 			item.supplierShort = item.supplier;
+		},
+		_formatDateForOData: function(sDate) {
+			if (!sDate) {
+				return null;
+			}
+			var oDate = new Date(sDate);
+			if (isNaN(oDate.getTime())) {
+				return null; // invalid date
+			}
+
+			return oDate.getFullYear().toString() +
+				String(oDate.getMonth() + 1).padStart(2, "0") +
+				String(oDate.getDate()).padStart(2, "0"); // yyyyMMdd
 		},
 
 		/*************** Clear data from all input fields,radio button & model make it default  *****************/
@@ -1015,7 +1297,7 @@ sap.ui.define([
 			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => item.fiscalYear))];
 			} else {
-				uniqueKeys = [...new Set(data.map(item => `${item.supplierShort} (${item.fiscalYear})`))];
+				uniqueKeys = [...new Set(data.map(item => `${item.supplier} (${item.fiscalYear})`))];
 			}
 
 			// Generate HSL colors based on index
@@ -1055,10 +1337,10 @@ sap.ui.define([
 				}));
 			} else {
 				rules = oData.map(item => {
-					const key = `${item.supplierShort} (${item.fiscalYear})`;
+					const key = `${item.supplier} (${item.fiscalYear})`;
 					return {
 						dataContext: {
-							"Supplier Name": item.supplierShort,
+							"Supplier Name": item.supplier,
 							"Fiscal Year": item.fiscalYear
 						},
 						properties: {
@@ -1082,10 +1364,33 @@ sap.ui.define([
 					},
 					drawingEffect: "glossy"
 				},
+				tooltip: {
+					visible: true
+				},
 				interaction: {
 					selectability: {
 						mode: "multiple"
 					},
+				},
+				categoryAxis: {
+					label: {
+						visible: true,
+						allowMultiline: true,
+						linesOfWrap: 4,
+						overlapBehavior: "wrap",
+						rotation: 0,
+						angle: 0,
+						maxWidth: 200,
+						truncatedLabelRatio: 0.9,
+						style: {
+							fontSize: "10px"
+						}
+					}
+				},
+				valueAxis: {
+					label: {
+						visible: true
+					}
 				}
 			});
 
@@ -1141,7 +1446,7 @@ sap.ui.define([
 			if (selectedTabText === "Purchase Turnover") {
 				uniqueKeys = [...new Set(data.map(item => `(${item.quater} ${item.quaterYear})`))];
 			} else {
-				uniqueKeys = [...new Set(data.map(item => `${item.supplierShort} (${item.quater} ${item.quaterYear})`))];
+				uniqueKeys = [...new Set(data.map(item => `${item.supplier} (${item.quater} ${item.quaterYear})`))];
 			}
 
 			uniqueKeys.forEach(function(key, i) {
@@ -1182,10 +1487,10 @@ sap.ui.define([
 				});
 			} else {
 				rules = oData.map(function(item) {
-					var key = `${item.supplierShort} (${item.quater} ${item.quaterYear})`;
+					var key = `${item.supplier} (${item.quater} ${item.quaterYear})`;
 					return {
 						dataContext: {
-							"Supplier Name": item.supplierShort,
+							"Supplier Name": item.supplier,
 							"Quarter": item.quater,
 							"Quarter Year": item.quaterYear
 						},
@@ -1210,9 +1515,32 @@ sap.ui.define([
 					},
 					drawingEffect: "glossy"
 				},
+				tooltip: {
+					visible: true
+				},
 				interaction: {
 					selectability: {
 						mode: "multiple"
+					}
+				},
+				categoryAxis: {
+					label: {
+						visible: true,
+						allowMultiline: true,
+						linesOfWrap: 4,
+						overlapBehavior: "wrap",
+						rotation: 0,
+						angle: 0,
+						maxWidth: 200,
+						truncatedLabelRatio: 0.9,
+						style: {
+							fontSize: "10px"
+						}
+					}
+				},
+				valueAxis: {
+					label: {
+						visible: true
 					}
 				}
 			});
