@@ -139,7 +139,7 @@
 								<content>
 									<VBox>
 										<core:Fragment id="chartFragment1SupplierDue"
-											fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.SupplierDueChartFragment1" type="XML"/>
+											fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.chartFragment1SupplierDue" type="XML"/>
 									</VBox>
 								</content>
 							</IconTabFilter>
@@ -149,7 +149,7 @@
 								design="Horizontal">
 								<content>
 									<core:Fragment id="chartFragment2SupplierDue"
-										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.SupplierDueChartFragment2" type="XML"/>
+										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.chartFragment2SupplierDue" type="XML"/>
 								</content>
 							</IconTabFilter>
 							<IconTabSeparator/>
@@ -158,7 +158,7 @@
 								iconColor="Critical" design="Horizontal">
 								<content>
 									<core:Fragment id="chartFragment3SupplierDue"
-										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.SupplierDueChartFragment3" type="XML"/>
+										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.chartFragment3SupplierDue" type="XML"/>
 								</content>
 							</IconTabFilter>
 							<!-- Scenario 4 -->
@@ -167,7 +167,7 @@
 								iconColor="Negative" design="Horizontal">
 								<content>
 									<core:Fragment id="chartFragment4SupplierDue"
-										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.SupplierDueChartFragment4" type="XML"/>
+										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueCharts.chartFragment4SupplierDue" type="XML"/>
 								</content>
 							</IconTabFilter>
 						</items>
@@ -179,7 +179,7 @@
 				backgroundDesign="Solid" width="auto" height="100%">
 				<content>
 					<!-- IconTabBar for switching between scenarios -->
-					<IconTabBar id="iconTabBarSupplierDueQtrFy" selectedKey="scenario1" select="onTabSelectSupplierDue" stretchContentHeight="true"
+					<IconTabBar id="iconTabBarSupplierDueQtrFy" selectedKey="scenario1" select="onTabSelectSupplierDueQtrFY" stretchContentHeight="true"
 						class="beautifulTabBar">
 						<items>
 							<!-- Scenario 1 -->
@@ -187,7 +187,7 @@
 								iconColor="Critical" design="Horizontal">
 								<content>
 									<core:Fragment id="chartFragment1SupplierDueQtrFy"
-										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueChartsQtrFy.SupplierDueQtrFyChartFragment1" type="XML"/>
+										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueChartsQtrFy.chartFragment1SupplierDueQtrFy" type="XML"/>
 								</content>
 							</IconTabFilter>
 							<!-- Scenario 2 -->
@@ -196,7 +196,7 @@
 								iconColor="Negative" design="Horizontal">
 								<content>
 									<core:Fragment id="chartFragment2SupplierDueQtrFy"
-										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueChartsQtrFy.SupplierDueQtrFyChartFragment2" type="XML"/>
+										fragmentName="com.infocus.purchaseApplication.view.fragments.supplierDueChartsQtrFy.chartFragment2SupplierDueQtrFy" type="XML"/>
 								</content>
 							</IconTabFilter>
 						</items>

@@ -106,6 +106,9 @@
 			"quarterlyTurnoverlistData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"totalSupplierDuelistData": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
 			"supplierMasterData": {
 				"type": "sap.ui.model.json.JSONModel"
 			},

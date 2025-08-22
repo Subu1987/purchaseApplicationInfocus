@@ -6,18 +6,18 @@
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+					<viz:VizFrame id="idVizFrameSupplierDue" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 					    <!-- Define dependents for Popover -->
-						<!--<viz:dependents>
-							<viz:Popover id="idPopOverFiscalYearWise"></viz:Popover>
-						</viz:dependents>-->
+						<viz:dependents>
+							<viz:Popover id="idPopOverAllSupplierDue"></viz:Popover>
+						</viz:dependents>
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{singleSupplierDuelistData>/}">
+							<vizData:FlattenedDataset data="{top5SupplierDuelistData>/}">
 								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{singleSupplierDuelistData>name1}"/>
+									<vizData:DimensionDefinition name="Supplier Name" value="{top5SupplierDuelistData>name1}"/>
 								</vizData:dimensions>
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Amount" value="{singleSupplierDuelistData>amount}"/>
+									<vizData:MeasureDefinition name="Amount" value="{top5SupplierDuelistData>amount}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
@@ -33,24 +33,24 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{singleSupplierDuelistData>/}" selectionMode="None">
+					<table:Table id="idTable" rows="{top5SupplierDuelistData>/}" selectionMode="None">
 						<table:columns>
 							<table:Column>
 								<Label text="Supplier Name"/>
 								<table:template>
-									<Text text="{singleSupplierDuelistData>name1}"/>
+									<Text text="{top5SupplierDuelistData>name1}"/>
 								</table:template>
 							</table:Column>
 							<!--<table:Column>
 								<Label text="Fiscal Year"/>
 								<table:template>
-									<Text text="{singleSupplierDuelistData>fiscalYear}"/>
+									<Text text="{top5SupplierDuelistData>fiscalYear}"/>
 								</table:template>
 							</table:Column>-->
 							<table:Column>
 								<Label text="Amount"/>
 								<table:template>
-									<Text text="{singleSupplierDuelistData>amount}"/>
+									<Text text="{top5SupplierDuelistData>amount}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

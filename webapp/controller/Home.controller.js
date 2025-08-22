@@ -42,6 +42,7 @@ sap.ui.define([
 			if (oGlobalDataModel) {
 				oGlobalDataModel.setProperty("/selectedTabText", "All Supplier Turnover");
 				oGlobalDataModel.setProperty("/selectedTabTextSupplierDue", "All Supplier Outstanding");
+				oGlobalDataModel.setProperty("/selectedTabTextSupplierDueQtrFY", "Single Supplier Outstanding");
 				oGlobalDataModel.setProperty("/isChartFragment1Visible", true);
 				oGlobalDataModel.setProperty("/isChartFragment2Visible", false);
 				oGlobalDataModel.setProperty("/isChartFragment3Visible", true);
@@ -506,67 +507,66 @@ sap.ui.define([
 		/*************** radio Button & drop down selection  *****************/
 
 		onRadioButtonSelectList: function(oEvent) {
+			var oGlobalData = this.getOwnerComponent().getModel("globalData").getData();
+			var {
+				selectedTabText,
+				selectedTabTextSupplierDue,
+				selectedTabTextSupplierDueQtrFY
+			} = oGlobalData;
 			var sSelectedKey = oEvent.getSource().getSelectedIndex();
 
-			// Get the containers (HBox elements)
-			var oFiscalYearBox = this.getView().byId("fiscalYearBox");
-			var oQuarterBox = this.getView().byId("quarterBox");
-			var oQuarterYearBox = this.getView().byId("quarterYearBox");
-			var oSupplierDueDatePickerBox = this.getView().byId("supplierDueDatePickerBox");
-			var oPanelNormalViewBox = this.getView().byId("panelNormalViewBox");
-			var oPanelSupplierDueViewBox = this.getView().byId("panelSupplierDueViewBox");
-			var oPanelSupplierDueQtrFyViewBox = this.getView().byId("panelSupplierDueQtrFyViewBox");
+			// Cache all controls in one go
+			var oView = this.getView();
+			var controls = {
+				fiscalYear: oView.byId("fiscalYearBox"),
+				quarter: oView.byId("quarterBox"),
+				quarterYear: oView.byId("quarterYearBox"),
+				customerMaster: oView.byId("customerMasterBox"),
+				supplierDueDate: oView.byId("supplierDueDatePickerBox"),
+				panelNormal: oView.byId("panelNormalViewBox"),
+				panelSupplierDue: oView.byId("panelSupplierDueViewBox"),
+				panelSupplierDueQtrFy: oView.byId("panelSupplierDueQtrFyViewBox")
+			};
 
-			/*var oButtonBox = this.getView().byId("buttonBox");*/
+			// Helper: hide all first
+			const hideAll = () => {
+				Object.values(controls).forEach(ctrl => ctrl.setVisible(false));
+			};
 
-			if (sSelectedKey === 0) { // Fiscal Year Wise selected
-				oFiscalYearBox.setVisible(true);
-				oQuarterBox.setVisible(false);
-				oQuarterYearBox.setVisible(false);
-				oSupplierDueDatePickerBox.setVisible(false);
-				oPanelNormalViewBox.setVisible(true);
-				oPanelSupplierDueViewBox.setVisible(false);
-				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+			hideAll();
 
-			} else if (sSelectedKey === 1) { // Quarterly Wise selected
-				oFiscalYearBox.setVisible(false);
-				oQuarterBox.setVisible(true);
-				oQuarterYearBox.setVisible(true);
-				oSupplierDueDatePickerBox.setVisible(false);
-				oPanelNormalViewBox.setVisible(true);
-				oPanelSupplierDueViewBox.setVisible(false);
-				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+			switch (sSelectedKey) {
+				case 0: // Fiscal Year Wise
+					controls.fiscalYear.setVisible(true);
+					controls.panelNormal.setVisible(true);
 
-			} else if (sSelectedKey === 2) {
+					controls.customerMaster.setVisible(selectedTabText === "Single Supplier Turnover");
+					break;
 
-				oFiscalYearBox.setVisible(false);
-				oQuarterBox.setVisible(false);
-				oQuarterYearBox.setVisible(false);
-				oSupplierDueDatePickerBox.setVisible(true);
-				oPanelNormalViewBox.setVisible(false);
-				oPanelSupplierDueViewBox.setVisible(true);
-				oPanelSupplierDueQtrFyViewBox.setVisible(false);
+				case 1: // Quarterly Wise
+					controls.quarter.setVisible(true);
+					controls.quarterYear.setVisible(true);
+					controls.panelNormal.setVisible(true);
 
-			} else {
+					controls.customerMaster.setVisible(selectedTabText === "Single Supplier Turnover");
+					break;
 
-				oFiscalYearBox.setVisible(false);
-				oQuarterBox.setVisible(true);
-				oQuarterYearBox.setVisible(true);
-				oSupplierDueDatePickerBox.setVisible(false);
-				oPanelNormalViewBox.setVisible(false);
-				oPanelSupplierDueViewBox.setVisible(false);
-				oPanelSupplierDueQtrFyViewBox.setVisible(true);
+				case 2: // Single Supplier Outstanding for Supplier Due
+					controls.supplierDueDate.setVisible(true);
+					controls.panelSupplierDue.setVisible(true);
 
+					controls.customerMaster.setVisible(selectedTabTextSupplierDue === "Single Supplier Outstanding");
+					break;
+				
+				case 3: // Single Supplier Outstanding for Supplier Qtr FY
+					controls.quarter.setVisible(true);
+					controls.quarterYear.setVisible(true);
+					controls.panelSupplierDueQtrFy.setVisible(true);
+					
+					controls.customerMaster.setVisible(selectedTabTextSupplierDueQtrFY === "Single Supplier Outstanding");
+					break;
 			}
 		},
-		/*onChartTypeChange: function(oEvent) {
-			// Get the selected radio button
-			var chartType = oEvent.getSource().getSelectedKey();
-			var oVizFrame = sap.ui.core.Fragment.byId(this.createId("chartFragment3"), "idVizFrame");
-
-			oVizFrame.setVizType(chartType);
-
-		},*/
 
 		/*************** get the Icontabfilter select updated in global model  *****************/
 
@@ -624,8 +624,33 @@ sap.ui.define([
 				oGlobalDataModel.setProperty("/selectedTabTextSupplierDue", oTextMapping[sSelectedKey] || "");
 			}
 		},
+		onTabSelectSupplierDueQtrFY: function(oEvent) {
+			var oGlobalDataModel = this.getOwnerComponent().getModel("globalData");
+			var oCustomerMasterBox = this.getView().byId("customerMasterBox");
 
-		/*************** get the table data from oData service  *****************/
+			// Get the selected tab key
+			var sSelectedKey = oEvent.getParameter("selectedKey");
+
+			// Define the mapping of keys to text values
+			var oTextMapping = {
+				"scenario1": "Single Supplier Outstanding",
+				"scenario2": "Total Outstanding"
+			};
+
+			// visible non-visible on customer box
+			if (oTextMapping[sSelectedKey] === "Single Supplier Outstanding") {
+				oCustomerMasterBox.setVisible(true);
+			} else {
+				oCustomerMasterBox.setVisible(false);
+			}
+
+			// Update the global model with the corresponding text
+			if (oGlobalDataModel) {
+				oGlobalDataModel.setProperty("/selectedTabTextSupplierDueQtrFY", oTextMapping[sSelectedKey] || "");
+			}
+		},
+
+		/*************** get the Backend data for Supplier  *****************/
 
 		hasData: function(value) {
 			if (Array.isArray(value)) {
@@ -727,31 +752,6 @@ sap.ui.define([
 
 			return filters;
 		},
-		_buildSupplierDueFilters: function(oGlobalData, oSelectedIndex) {
-			var filters = [];
-
-			var aSelectedSupplierMasterData = oGlobalData.selectedSupplierIDs || [];
-			var sSelectedSupplierDueDate = oGlobalData.selectedSupplierDueDate; // single value from DatePicker
-			var sSelectedTabTextSupplierDue = oGlobalData.selectedTabTextSupplierDue;
-
-			// Supplier filter
-			if (sSelectedTabTextSupplierDue === "Single Supplier Outstanding" && aSelectedSupplierMasterData.length > 0) {
-				filters.push(new sap.ui.model.Filter({
-					filters: aSelectedSupplierMasterData.map(function(cust) {
-						return new sap.ui.model.Filter("lifnr", sap.ui.model.FilterOperator.EQ, cust);
-					}),
-					and: false
-				}));
-			}
-
-			// Date filter
-			/*var sFormattedDate = this._formatDateForOData(sSelectedSupplierDueDate);*/
-			if (sSelectedSupplierDueDate) {
-				filters.push(new sap.ui.model.Filter("datum", sap.ui.model.FilterOperator.EQ, sSelectedSupplierDueDate));
-			}
-
-			return filters;
-		},
 		getAllSupplierData: function() {
 			var that = this;
 
@@ -778,7 +778,7 @@ sap.ui.define([
 					console.log("Sorted Data:", oData);
 
 					// format customer data function
-					that.formatCustomerData(oData);
+					that.formatSupplierData(oData);
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
@@ -794,56 +794,6 @@ sap.ui.define([
 					// Bind chart
 					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 						sFragmentId, oData);
-
-					// Check if data is available
-					sap.ui.core.BusyIndicator.hide();
-					if (!oData.length) {
-						sap.m.MessageBox.information("There are no data available!");
-					}
-				},
-				error: function(error) {
-					sap.ui.core.BusyIndicator.hide();
-					console.error(error);
-
-					try {
-						var errorObject = JSON.parse(error.responseText);
-						sap.m.MessageBox.error(errorObject.error.message.value);
-					} catch (e) {
-						sap.m.MessageBox.error("An unexpected error occurred.");
-					}
-				}
-			});
-		},
-		getAllSupplierDueData: function() {
-			var that = this;
-
-			// Retrieve models once to avoid redundant calls
-			var oComponent = this.getOwnerComponent();
-			var oModel = oComponent.getModel();
-			var oGlobalDataModel = oComponent.getModel("globalData");
-			var oGlobalData = oGlobalDataModel.getData();
-			var oAllSupplierDuelistModel = oComponent.getModel("allSupplierDuelistData");
-			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
-
-			// reusable filter function 
-			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
-
-			// Show busy indicator
-			sap.ui.core.BusyIndicator.show();
-
-			// OData call to fetch data
-			oModel.read("/es_outstandingset", {
-				filters: filters,
-				success: function(response) {
-					// sorting the oData
-					/*var oData = that.sortByTurnOverDesc(response.results || []);*/
-					var oData = response.results || [];
-					console.log("All Supplier Due Data:", oData);
-					oAllSupplierDuelistModel.setProperty("/", oData);
-
-					// Bind chart
-					/*isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
-						sFragmentId, oData);*/
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -890,7 +840,7 @@ sap.ui.define([
 					console.log("Sorted Data:", oData);
 
 					// format customer data function
-					that.formatCustomerData(oData);
+					that.formatSupplierData(oData);
 
 					// Update models based on selection
 					var isSelectedIndex = oSelectedIndex === 0;
@@ -906,6 +856,215 @@ sap.ui.define([
 					// Bind chart
 					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
 						sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getSingleSupplierData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oSingleCustListDataModel = oComponent.getModel("singleCustlistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/SINGLE_SUPPSet", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
+
+					// format customer data function
+					that.formatSupplierData(oData);
+
+					// Update models based on selection
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
+
+					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
+
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+		getQuarterlyData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oQuarterlyTurnoverlistDataModel = oComponent.getModel("quarterlyTurnoverlistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/POSet", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					var oData = that.sortByTurnOverDesc(response.results || []);
+					console.log("Sorted Data:", oData);
+
+					// format customer data function
+					that.formatSupplierData(oData);
+
+					// Update models based on selection
+					var isSelectedIndex = oSelectedIndex === 0;
+					var sPropertyPath = isSelectedIndex ? "/quarterlyTurnoverlistDataFiscalYearWise" :
+						"/quarterlyTurnoverlistDataQuaterlyWise";
+					var sFragmentId = isSelectedIndex ? "chartFragment7" : "chartFragment8";
+
+					oQuarterlyTurnoverlistDataModel.setProperty(sPropertyPath, oData);
+
+					// Toggle visibility of chart fragments
+					oGlobalDataModel.setProperty("/isChartFragment7Visible", isSelectedIndex);
+					oGlobalDataModel.setProperty("/isChartFragment8Visible", !isSelectedIndex);
+
+					// Bind chart
+					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
+						sFragmentId, oData);
+
+					// Check if data is available
+					sap.ui.core.BusyIndicator.hide();
+					if (!oData.length) {
+						sap.m.MessageBox.information("There are no data available!");
+					}
+				},
+				error: function(error) {
+					sap.ui.core.BusyIndicator.hide();
+					console.error(error);
+
+					try {
+						var errorObject = JSON.parse(error.responseText);
+						sap.m.MessageBox.error(errorObject.error.message.value);
+					} catch (e) {
+						sap.m.MessageBox.error("An unexpected error occurred.");
+					}
+				}
+			});
+		},
+
+		/*************** get the Backend data for Supplier Due as on Date  *****************/
+
+		_buildSupplierDueFilters: function(oGlobalData, oSelectedIndex) {
+			var filters = [];
+
+			var aSelectedSupplierMasterData = oGlobalData.selectedSupplierIDs || [];
+			var sSelectedSupplierDueDate = oGlobalData.selectedSupplierDueDate; // single value from DatePicker
+			var sSelectedTabTextSupplierDue = oGlobalData.selectedTabTextSupplierDue;
+
+			// Supplier filter
+			/*if (sSelectedTabTextSupplierDue === "Single Supplier Outstanding" && aSelectedSupplierMasterData.length > 0) {
+				filters.push(new sap.ui.model.Filter({
+					filters: aSelectedSupplierMasterData.map(function(cust) {
+						return new sap.ui.model.Filter("lifnr", sap.ui.model.FilterOperator.EQ, cust);
+					}),
+					and: false
+				}));
+			}*/
+
+			if (sSelectedSupplierDueDate) {
+				filters.push(new sap.ui.model.Filter("datum", sap.ui.model.FilterOperator.EQ, sSelectedSupplierDueDate));
+			}
+
+			if (sSelectedTabTextSupplierDue === "Total Outstanding") {
+				filters.push(new sap.ui.model.Filter("total_outstanding", sap.ui.model.FilterOperator.EQ, "X"));
+			}
+
+			return filters;
+		},
+		getAllSupplierDueData: function() {
+			var that = this;
+
+			// Retrieve models once to avoid redundant calls
+			var oComponent = this.getOwnerComponent();
+			var oModel = oComponent.getModel();
+			var oGlobalDataModel = oComponent.getModel("globalData");
+			var oGlobalData = oGlobalDataModel.getData();
+			var oAllSupplierDuelistModel = oComponent.getModel("allSupplierDuelistData");
+			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
+
+			// reusable filter function 
+			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
+
+			// Show busy indicator
+			sap.ui.core.BusyIndicator.show();
+
+			// OData call to fetch data
+			oModel.read("/es_outstandingset", {
+				filters: filters,
+				success: function(response) {
+					// sorting the oData
+					/*var oData = that.sortByTurnOverDesc(response.results || []);*/
+					var oData = response.results || [];
+					console.log("All Supplier Due Data:", oData);
+
+					// format Supplier Due data function
+					that.formatSupplierDueData(oData);
+
+					oAllSupplierDuelistModel.setProperty("/", oData);
+
+					// Bind chart
+					var sFragmentId = "chartFragment1SupplierDue";
+					that.bindChartColorRulesBySupplierDue(sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -953,73 +1112,15 @@ sap.ui.define([
 					// sorting the oData
 					var oData = response.results || [];
 					console.log("Top5 Supplier Due Data:", oData);
+
+					// format Supplier Due data function
+					that.formatSupplierDueData(oData);
+
 					oTop5SupplierDuelistModel.setProperty("/", oData);
 
 					// Bind chart
-					/*isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
-						sFragmentId, oData);*/
-
-					// Check if data is available
-					sap.ui.core.BusyIndicator.hide();
-					if (!oData.length) {
-						sap.m.MessageBox.information("There are no data available!");
-					}
-				},
-				error: function(error) {
-					sap.ui.core.BusyIndicator.hide();
-					console.error(error);
-
-					try {
-						var errorObject = JSON.parse(error.responseText);
-						sap.m.MessageBox.error(errorObject.error.message.value);
-					} catch (e) {
-						sap.m.MessageBox.error("An unexpected error occurred.");
-					}
-				}
-			});
-		},
-		getSingleSupplierData: function() {
-			var that = this;
-
-			// Retrieve models once to avoid redundant calls
-			var oComponent = this.getOwnerComponent();
-			var oModel = oComponent.getModel();
-			var oGlobalDataModel = oComponent.getModel("globalData");
-			var oGlobalData = oGlobalDataModel.getData();
-			var oSingleCustListDataModel = oComponent.getModel("singleCustlistData");
-			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
-
-			// reusable filter function 
-			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
-
-			// Show busy indicator
-			sap.ui.core.BusyIndicator.show();
-
-			// OData call to fetch data
-			oModel.read("/SINGLE_SUPPSet", {
-				filters: filters,
-				success: function(response) {
-					// sorting the oData
-					var oData = that.sortByTurnOverDesc(response.results || []);
-					console.log("Sorted Data:", oData);
-
-					// format customer data function
-					that.formatCustomerData(oData);
-
-					// Update models based on selection
-					var isSelectedIndex = oSelectedIndex === 0;
-					var sPropertyPath = isSelectedIndex ? "/singleCustlistDataFiscalYearWise" : "/singleCustlistDataQuaterlyWise";
-					var sFragmentId = isSelectedIndex ? "chartFragment5" : "chartFragment6";
-
-					oSingleCustListDataModel.setProperty(sPropertyPath, oData);
-
-					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment5Visible", isSelectedIndex);
-					oGlobalDataModel.setProperty("/isChartFragment6Visible", !isSelectedIndex);
-
-					// Bind chart
-					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
-						sFragmentId, oData);
+					var sFragmentId = "chartFragment2SupplierDue";
+					that.bindChartColorRulesBySupplierDue(sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -1049,21 +1150,34 @@ sap.ui.define([
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
 			var oSingleSupplierDuelistModel = oComponent.getModel("singleSupplierDuelistData");
-			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 
-			// reusable filter function 
-			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
+			var aSelectedSupplierMasterData = oGlobalData.selectedSupplierIDs || [];
+			var sSelectedSupplierDueDate = oGlobalData.selectedSupplierDueDate;
+
+			if (!aSelectedSupplierMasterData.length || !sSelectedSupplierDueDate) {
+				sap.m.MessageBox.warning("Please select both Supplier and Due Date.");
+				return;
+			}
+
+			// Take first supplier for single read
+			var sSupplier = aSelectedSupplierMasterData[0];
+			var sDate = sSelectedSupplierDueDate;
+
+			var sPath = "/es_outstandingset(lifnr='" + sSupplier + "',datum='" + sDate + "')";
 
 			// Show busy indicator
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oModel.read("/es_outstandingset", {
-				filters: filters,
+			oModel.read(sPath, {
 				success: function(response) {
 					// sorting the oData
 					var oData = response.results || [];
 					console.log("Single Supplier Due Data:", oData);
+
+					// format Supplier Due data function
+					that.formatSupplierDueData(oData);
+
 					oSingleSupplierDuelistModel.setProperty("/", oData);
 
 					// Bind chart
@@ -1089,7 +1203,7 @@ sap.ui.define([
 				}
 			});
 		},
-		getQuarterlyData: function() {
+		getTotalSupplerDueData: function() {
 			var that = this;
 
 			// Retrieve models once to avoid redundant calls
@@ -1097,41 +1211,31 @@ sap.ui.define([
 			var oModel = oComponent.getModel();
 			var oGlobalDataModel = oComponent.getModel("globalData");
 			var oGlobalData = oGlobalDataModel.getData();
-			var oQuarterlyTurnoverlistDataModel = oComponent.getModel("quarterlyTurnoverlistData");
+			var oTotalSupplierDuelistData = oComponent.getModel("totalSupplierDuelistData");
 			var oSelectedIndex = this.byId("radioBtnlist").getSelectedIndex();
 
 			// reusable filter function 
-			var filters = this._buildFilters(oGlobalData, oSelectedIndex);
+			var filters = this._buildSupplierDueFilters(oGlobalData, oSelectedIndex);
 
 			// Show busy indicator
 			sap.ui.core.BusyIndicator.show();
 
 			// OData call to fetch data
-			oModel.read("/POSet", {
+			oModel.read("/es_outstandingset", {
 				filters: filters,
 				success: function(response) {
 					// sorting the oData
-					var oData = that.sortByTurnOverDesc(response.results || []);
-					console.log("Sorted Data:", oData);
+					var oData = response.results || [];
+					console.log("Total Outstanding Supplier Due Data:", oData);
 
-					// format customer data function
-					that.formatCustomerData(oData);
+					// format Supplier Due data function
+					that.formatSupplierDueData(oData);
 
-					// Update models based on selection
-					var isSelectedIndex = oSelectedIndex === 0;
-					var sPropertyPath = isSelectedIndex ? "/quarterlyTurnoverlistDataFiscalYearWise" :
-						"/quarterlyTurnoverlistDataQuaterlyWise";
-					var sFragmentId = isSelectedIndex ? "chartFragment7" : "chartFragment8";
-
-					oQuarterlyTurnoverlistDataModel.setProperty(sPropertyPath, oData);
-
-					// Toggle visibility of chart fragments
-					oGlobalDataModel.setProperty("/isChartFragment7Visible", isSelectedIndex);
-					oGlobalDataModel.setProperty("/isChartFragment8Visible", !isSelectedIndex);
+					oTotalSupplierDuelistData.setProperty("/", oData);
 
 					// Bind chart
-					isSelectedIndex ? that.bindChartColorRulesByFiscalYearWise(sFragmentId, oData) : that.bindChartColorRulesByQuarterlyWise(
-						sFragmentId, oData);
+					var sFragmentId = "chartFragment4SupplierDue";
+					that.bindChartColorRulesBySupplierDue(sFragmentId, oData);
 
 					// Check if data is available
 					sap.ui.core.BusyIndicator.hide();
@@ -1154,12 +1258,13 @@ sap.ui.define([
 		},
 
 		/*************** helper function  *****************/
+
 		sortByTurnOverDesc: function(aData) {
 			return aData.sort(function(a, b) {
 				return parseFloat(b.turnOver) - parseFloat(a.turnOver);
 			});
 		},
-		formatCustomerData: function(oData) {
+		formatSupplierData: function(oData) {
 			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
 			var oSelectedTabText = oGlobalModel.getProperty("/selectedTabText");
 			oData.forEach(item => {
@@ -1171,10 +1276,27 @@ sap.ui.define([
 			});
 			return oData;
 		},
+		formatSupplierDueData: function(oData) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sSelectedTabTextSupplierDue = oGlobalModel.getProperty("/selectedTabTextSupplierDue");
+			oData.forEach(item => {
+				this.convertTurnoverToCrore(item);
+				/*if (sSelectedTabTextSupplierDue !== "Purchase Turnover") {
+					this.generateSupplierShort(item, sSelectedTabTextSupplierDue);
+				}*/
+
+			});
+			return oData;
+		},
 		convertTurnoverToCrore: function(item) {
 			if (item.turnOver) {
 				item.turnOver = (parseFloat(item.turnOver) / 10000000).toFixed(2);
 			}
+
+			if (item.amount) {
+				item.amount = (parseFloat(item.amount) / 10000000).toFixed(2);
+			}
+
 		},
 		generateSupplierShort: function(item) {
 			const words = item.supplier.split(" ");
@@ -1186,19 +1308,6 @@ sap.ui.define([
 
 			/*item.supplierShort = abbreviation || item.supplier;*/
 			item.supplierShort = item.supplier;
-		},
-		_formatDateForOData: function(sDate) {
-			if (!sDate) {
-				return null;
-			}
-			var oDate = new Date(sDate);
-			if (isNaN(oDate.getTime())) {
-				return null; // invalid date
-			}
-
-			return oDate.getFullYear().toString() +
-				String(oDate.getMonth() + 1).padStart(2, "0") +
-				String(oDate.getDate()).padStart(2, "0"); // yyyyMMdd
 		},
 
 		/*************** Clear data from all input fields,radio button & model make it default  *****************/
@@ -1590,7 +1699,158 @@ sap.ui.define([
 
 			// Connect the Popover to the VizFrame
 			oPopover.connect(oVizFrame.getVizUid());
-		}
+		},
+
+		/*************** chart function & plotting the chart supplier data  *****************/
+
+		generateColorMapBySupplierDue: function(data, sSelectedTabTextSupplierDue) {
+			const colorMap = {};
+			let uniqueKeys = [];
+
+			// Choose key format based on selected tab
+			if (sSelectedTabTextSupplierDue === "Total Outstanding") {
+				uniqueKeys = [...new Set(data.map(item => item.name1))];
+			} else {
+				uniqueKeys = [...new Set(data.map(item => `${item.name1}`))];
+			}
+
+			// Generate HSL colors based on index
+			uniqueKeys.forEach((key, i) => {
+				const color = `hsl(${(i * 43) % 360}, 70%, 50%)`;
+				colorMap[key] = color;
+			});
+
+			return {
+				colorMap
+			};
+		},
+		bindChartColorRulesBySupplierDue: function(sFragmentId, oData) {
+			var oGlobalModel = this.getOwnerComponent().getModel("globalData");
+			var sSelectedTabTextSupplierDue = oGlobalModel.getProperty("/selectedTabTextSupplierDue");
+			var oVizFrameSupplierDue = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idVizFrameSupplierDue");
+
+			if (!oVizFrameSupplierDue) {
+				console.warn("VizFrame not found for Fragment ID:", sFragmentId);
+				return;
+			}
+
+			var {
+				colorMap
+			} = this.generateColorMapBySupplierDue(oData, sSelectedTabTextSupplierDue);
+
+			var rules = [];
+
+			if (sSelectedTabTextSupplierDue === "Total Outstanding") {
+				rules = oData.map(item => ({
+					dataContext: {
+						"Amount": item.amount
+					},
+					properties: {
+						color: colorMap[item.amount]
+					}
+				}));
+			} else {
+				rules = oData.map(item => {
+					const key = `${item.name1}`;
+					return {
+						dataContext: {
+							"Supplier Name": item.name1,
+							/*"Amount": item.amount*/
+						},
+						properties: {
+							color: colorMap[key]
+						}
+					};
+				});
+			}
+
+			oVizFrameSupplierDue.setVizProperties({
+				title: {
+					visible: true,
+					text: "Supplier Due As on Date"
+				},
+				plotArea: {
+					dataPointStyle: {
+						rules
+					},
+					dataLabel: {
+						visible: true,
+					},
+					drawingEffect: "glossy"
+				},
+				tooltip: {
+					visible: true
+				},
+				interaction: {
+					selectability: {
+						mode: "multiple"
+					},
+				},
+				categoryAxis: {
+					label: {
+						visible: true,
+						allowMultiline: true,
+						linesOfWrap: 4,
+						overlapBehavior: "wrap",
+						rotation: 0,
+						angle: 0,
+						maxWidth: 200,
+						truncatedLabelRatio: 0.9,
+						style: {
+							fontSize: "10px"
+						}
+					}
+				},
+				valueAxis: {
+					label: {
+						visible: true
+					}
+				}
+			});
+
+			// Use bind to pass sFragmentId and call _onChartSelect
+			oVizFrameSupplierDue.attachSelectData(this._onChartSelectSupplierDue.bind(this, sFragmentId));
+
+		},
+		_onChartSelectSupplierDue: function(sFragmentId, oEvent) {
+			var oVizFrameSupplierDue = oEvent.getSource();
+			var oPopover = sap.ui.core.Fragment.byId(this.createId(sFragmentId), "idPopOverAllSupplierDue");
+
+			if (!oPopover) {
+				console.warn("Popover not found for Fragment ID:", sFragmentId)
+				return;
+			}
+
+			// Get selected data from the event (it will be in the 'data' parameter of the event)
+			var aSelectedData = oEvent.getParameter("data");
+
+			if (!aSelectedData || aSelectedData.length === 0) {
+				console.warn("No data selected");
+				return;
+			}
+
+			// We assume single selection and access the first item in the selected data array
+			var oSelectedItem = aSelectedData[0];
+
+			// Directly get the data from the selected item
+			var oDataContext = oSelectedItem.data; // Directly access the data (it may not need 'data.data')
+
+			// Assuming you are accessing Supplier Name, Fiscal Year, and Turnover
+			var sSupplier = oDataContext["Supplier Name"];
+			var sTurnover = oDataContext["Amount"]; // Adjust the field name as necessary
+
+			// Create a JSON model to hold the data for the Popover
+			var oPopoverModel = new sap.ui.model.json.JSONModel({
+				supplier: sSupplier,
+				turnover: sTurnover
+			});
+
+			// Set the model on the Popover
+			oPopover.setModel(oPopoverModel);
+
+			// Connect the Popover to the VizFrame
+			oPopover.connect(oVizFrameSupplierDue.getVizUid());
+		},
 
 	});
 });

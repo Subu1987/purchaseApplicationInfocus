@@ -6,24 +6,24 @@
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+					<viz:VizFrame id="idVizFrameSupplierDue" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 					    <!-- Define dependents for Popover -->
-						<!--<viz:dependents>
-							<viz:Popover id="idPopOverFiscalYearWise"></viz:Popover>
-						</viz:dependents>-->
+						<viz:dependents>
+							<viz:Popover id="idPopOverAllSupplierDue"></viz:Popover>
+						</viz:dependents>
 						<viz:dataset>
-							<vizData:FlattenedDataset data="{top5SupplierDuelistData>/}">
-								<vizData:dimensions>
-									<vizData:DimensionDefinition name="Supplier Name" value="{top5SupplierDuelistData>name1}"/>
-								</vizData:dimensions>
+							<vizData:FlattenedDataset data="{totalSupplierDuelistData>/}">
+								<!--<vizData:dimensions>
+									<vizData:DimensionDefinition name="Supplier Name" value="{totalSupplierDuelistData>name1}"/>
+								</vizData:dimensions>-->
 								<vizData:measures>
-									<vizData:MeasureDefinition name="Amount" value="{top5SupplierDuelistData>amount}"/>
+									<vizData:MeasureDefinition name="Amount" value="{totalSupplierDuelistData>amount}"/>
 								</vizData:measures>
 							</vizData:FlattenedDataset>
 						</viz:dataset>
 						<viz:feeds>
 							<vizFeeds:FeedItem uid="valueAxis" type="Measure" values="Amount"/>
-							<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>
+							<!--<vizFeeds:FeedItem uid="categoryAxis" type="Dimension" values="Supplier Name"/>-->
 							
 						</viz:feeds>
 						
@@ -33,24 +33,24 @@
 			<!-- Table Content -->
 			<suite:ChartContainerContent icon="sap-icon://table-chart" title="Table View">
 				<suite:content>
-					<table:Table id="idTable" rows="{top5SupplierDuelistData>/}" selectionMode="None">
+					<table:Table id="idTable" rows="{totalSupplierDuelistData>/}" selectionMode="None">
 						<table:columns>
-							<table:Column>
+							<!--<table:Column>
 								<Label text="Supplier Name"/>
 								<table:template>
-									<Text text="{top5SupplierDuelistData>name1}"/>
+									<Text text="{totalSupplierDuelistData>name1}"/>
 								</table:template>
-							</table:Column>
+							</table:Column>-->
 							<!--<table:Column>
 								<Label text="Fiscal Year"/>
 								<table:template>
-									<Text text="{top5SupplierDuelistData>fiscalYear}"/>
+									<Text text="{totalSupplierDuelistData>fiscalYear}"/>
 								</table:template>
 							</table:Column>-->
 							<table:Column>
 								<Label text="Amount"/>
 								<table:template>
-									<Text text="{top5SupplierDuelistData>amount}"/>
+									<Text text="{totalSupplierDuelistData>amount}"/>
 								</table:template>
 							</table:Column>
 						</table:columns>

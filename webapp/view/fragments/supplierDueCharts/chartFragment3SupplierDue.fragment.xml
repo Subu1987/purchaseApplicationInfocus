@@ -6,11 +6,11 @@
 		<suite:content>
 			<suite:ChartContainerContent icon="sap-icon://bar-chart" title="Chart View">
 				<suite:content>
-					<viz:VizFrame id="idVizFrame" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
+					<viz:VizFrame id="idVizFrameSupplierDue" vizType="column" height="400px" width="100%" uiConfig="{applicationSet:'fiori'}">
 					    <!-- Define dependents for Popover -->
-						<!--<viz:dependents>
-							<viz:Popover id="idPopOverFiscalYearWise"></viz:Popover>
-						</viz:dependents>-->
+						<viz:dependents>
+							<viz:Popover id="idPopOverAllSupplierDue"></viz:Popover>
+						</viz:dependents>
 						<viz:dataset>
 							<vizData:FlattenedDataset data="{singleSupplierDuelistData>/}">
 								<vizData:dimensions>
